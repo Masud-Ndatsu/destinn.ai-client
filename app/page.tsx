@@ -1,11 +1,14 @@
+import { MobileNavMenu, MobileNavSearch } from "@/components/mobile-nav";
 import Navbar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Home() {
   return (
-    <>
+    <main className="relative">
       <Navbar />
+      <MobileNavMenu />
+      <MobileNavSearch />
       <section className="bg-blue-900 text-white py-16 text-center min-h-[500px] flex flex-col justify-center items-center px-4">
         <h2 className="text-4xl md:text-6xl font-bold mb-4 uppercase text-gray-50">
           This Career is Yours
@@ -35,6 +38,6 @@ export default function Home() {
           Receive Opportunities
         </Button>
       </section>
-    </>
+    </main>
   );
 }
