@@ -68,7 +68,9 @@ export const MobileNavSearch = () => {
         <h2 className="text-2xl font-bold my-6">
           What can we help you with today?
         </h2>
-        <p className="">Search among jobs, companies, articles and more</p>
+        <p className="text-lg tracking-wider">
+          Search among jobs, companies, articles and more
+        </p>
       </div>
     </article>
   );
