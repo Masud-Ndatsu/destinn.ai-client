@@ -1,12 +1,22 @@
+"use client";
 import Link from "next/link";
 import React from "react";
 import { Input } from "./ui/input";
 import { IoClose } from "react-icons/io5";
+import useNavbarStore from "@/stores/navbar";
 
 export const MobileNavMenu = () => {
+  const isMenuView = useNavbarStore((state) => state.isMenuView);
+  const setMenuView = useNavbarStore((state) => state.setMenuView);
+
   return (
-    <article className="bg-gray-50 absolute top-[70px] left-0 h-screen w-full p-8">
-      <ul className="flex flex-col gap-4">
+    <article
+      className={`bg-gray-50 fixed top-[70px] left-0 h-screen w-full p-12 z-50 transition-transform duration-300 ${
+        isMenuView ? "translate-x-0" : "-translate-x-full pointer-events-none"
+      }`}
+      aria-hidden={!isMenuView}
+    >
+      <ul className="flex flex-col gap-4 mt-8">
         <li>
           <Link className="font-semibold" href={"/"}>
             Home
@@ -33,9 +43,21 @@ export const MobileNavMenu = () => {
 };
 
 export const MobileNavSearch = () => {
+  const isSearchView = useNavbarStore((state) => state.isSearchView);
+  const setSearchView = useNavbarStore((state) => state.setSearchView);
+
   return (
-    <article className="bg-gray-50 absolute top-0 left-0 h-screen w-full p-8">
-      <IoClose className="absolute right-[8px] top-[16px] text-xl" />
+    <article
+      className={`bg-gray-50 fixed top-0 left-0 h-screen w-full p-12 z-50 transition-transform duration-300 ${
+        isSearchView ? "translate-y-0" : "-translate-y-full pointer-events-none"
+      }`}
+      aria-hidden={!isSearchView}
+    >
+      <IoClose
+        className="absolute right-[16px] top-[16px] text-2xl cursor-pointer"
+        onClick={() => setSearchView(false)}
+        aria-label="Close search"
+      />
       <Input
         type="text"
         className="rounded-none p-6 shadow-none border border-blue-950 text-gray-600 tracking-wider"
