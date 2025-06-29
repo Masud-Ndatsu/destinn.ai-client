@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import Logo from "./logo";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -8,9 +8,17 @@ import { Input } from "./ui/input";
 import { AiOutlineMenu } from "react-icons/ai";
 import { IoClose, IoSearch } from "react-icons/io5";
 import useNavbarStore from "@/stores/navbar";
+import useModalStore from "@/stores/modal";
 
 const Navbar = () => {
-  const { setMenuView, isMenuView, setSearchView } = useNavbarStore();
+  const setMenuView = useNavbarStore((state) => state.setMenuView);
+  const isMenuView = useNavbarStore((state) => state.isMenuView);
+  const setSearchView = useNavbarStore((state) => state.setSearchView);
+
+  const open = useModalStore((state) => state.open);
+  const handleSignInClick = useCallback(() => {
+    open(true);
+  }, [open]);
   return (
     <nav className="h-[70px] bg-gray-50 my-auto shadow-sm flex items-center gap-6 justify-between px-4">
       <div className="flex gap-8 items-center">
@@ -56,7 +64,12 @@ const Navbar = () => {
           />
         </div>
 
-        <Button className="rounded-none font-semibold">Sign in</Button>
+        <Button
+          className="rounded-none font-semibold"
+          onClick={handleSignInClick}
+        >
+          Sign in
+        </Button>
       </div>
     </nav>
   );
