@@ -16,7 +16,7 @@ export const MobileNavMenu = () => {
       }`}
       aria-hidden={!isMenuView}
     >
-      <ul className="flex flex-col gap-4 mt-8">
+      <ul className="flex flex-col gap-10 mt-8 text-2xl">
         <li>
           <Link className="font-semibold" href={"/"}>
             Home
