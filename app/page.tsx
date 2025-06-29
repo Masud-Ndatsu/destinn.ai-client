@@ -10,7 +10,7 @@ export default function Home() {
       <MobileNavMenu />
       <MobileNavSearch />
       <section className="bg-blue-900 text-white py-2 text-center min-h-[500px] px-4">
-        <h2 className="text-[40px] md:text-4xl xl:text-6xl md:mt-[100px] font-bold uppercase text-gray-50">
+        <h2 className="text-2xl mt-8 md:text-4xl xl:text-6xl md:mt-[100px] font-bold uppercase text-gray-50">
           This Career is Yours
         </h2>
         <p className="md:text-xl mx-auto mb-8 tracking-widest max-w-2xl text-gray-50 my-4">
@@ -21,7 +21,7 @@ export default function Home() {
           <Input
             type="text"
             placeholder="Search job by title, keyword or company"
-            className="block h-[50px] rounded-none p-6 text-black bg-white flex-1 border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="block h-[50px] rounded-none p-4 text-black bg-white flex-1 border-none focus-visible:ring-0 focus-visible:ring-offset-0"
           />
           <Button className="h-[50px] rounded-none text-base px-6 cursor-pointer">
             Search
