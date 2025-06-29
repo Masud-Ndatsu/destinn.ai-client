@@ -10,11 +10,38 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { z } from "zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signInUser } from "@/lib/actions/auth";
+
+const schema = z.object({
+  email: z.string(),
+  password: z.string(),
+});
+
+type LoginInput = z.infer<typeof schema>;
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit: SubmitHandler<LoginInput> = async (data) => {
+    console.log("This is saves :", data);
+    const response = await signInUser(data);
+    console.log(response);
+    reset();
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="!bg-transparent rounded-none shadow-none border-none">
@@ -25,13 +52,14 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
+                  {...register("email")}
                   placeholder="m@example.com"
                   className="rounded-none"
                   required
@@ -50,6 +78,7 @@ export function LoginForm({
                 <Input
                   id="password"
                   type="password"
+                  {...register("password")}
                   className="rounded-none"
                   required
                 />

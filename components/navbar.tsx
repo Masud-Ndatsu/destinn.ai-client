@@ -9,13 +9,15 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { IoClose, IoSearch } from "react-icons/io5";
 import useNavbarStore from "@/stores/navbar";
 import useModalStore from "@/stores/modal";
+import { useAuthStatus } from "@/hooks/use-auth-status";
 
 const Navbar = () => {
   const setMenuView = useNavbarStore((state) => state.setMenuView);
   const isMenuView = useNavbarStore((state) => state.isMenuView);
   const setSearchView = useNavbarStore((state) => state.setSearchView);
+  const open = useModalStore((state) => state.setLoginModalOpen);
+  const { isAuthenticated } = useAuthStatus();
 
-  const open = useModalStore((state) => state.open);
   const handleSignInClick = useCallback(() => {
     open(true);
   }, [open]);
@@ -64,12 +66,21 @@ const Navbar = () => {
           />
         </div>
 
-        <Button
-          className="rounded-none font-semibold"
-          onClick={handleSignInClick}
-        >
-          Sign in
-        </Button>
+        {isAuthenticated ? (
+          <Link href="/dashboard">
+            <Button variant="default" className="rounded-none">
+              Dashboard
+            </Button>
+          </Link>
+        ) : (
+          <Button
+            variant="outline"
+            className="rounded-none"
+            onClick={handleSignInClick}
+          >
+            Sign In
+          </Button>
+        )}
       </div>
     </nav>
   );

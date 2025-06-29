@@ -8,32 +8,34 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ReactNode } from "react";
-import useModalStore from "@/stores/modal";
 
 interface ModalProps {
-  title?: string;
   trigger: ReactNode;
   children: ReactNode;
+  openModal: boolean;
+  closeModal: (value: boolean) => void;
 }
 
-export function Modal({ trigger, children }: ModalProps) {
-  const isOpenModal = useModalStore((state) => state.isOpen);
-  const open = useModalStore((state) => state.open);
-
+export function Modal({
+  trigger,
+  children,
+  openModal,
+  closeModal,
+}: ModalProps) {
   return (
     <Dialog
-      open={isOpenModal}
-      onOpenChange={(openState) => (openState ? open(true) : open(false))}
+      open={openModal}
+      onOpenChange={(openState) => closeModal(openState)}
     >
       <DialogTrigger asChild>
         <span
-          onClick={() => open(!isOpenModal)}
+          onClick={() => closeModal(!openModal)}
           style={{ display: "inline-block", color: "white" }}
         >
           {trigger}
         </span>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md rounded-none">
+      <DialogContent className="md:max-w-4xl rounded-none md:p-20">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">{null}</DialogTitle>
         </DialogHeader>
