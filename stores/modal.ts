@@ -1,16 +1,20 @@
 import { create } from "zustand";
 
 type State = {
-  isOpen: boolean;
+  isLoginModalOpen: boolean;
+  isOpportunityModalOpen: boolean;
 };
 
 type Action = {
-  open: (value: boolean) => void;
+  setLoginModalOpen: (value: boolean) => void;
+  setOpportunityModalOpen: (value: boolean) => void;
 };
 
 const useModalStore = create<State & Action>((set) => ({
-  isOpen: false,
-  open: (value) => set({ isOpen: value }),
+  isLoginModalOpen: false,
+  isOpportunityModalOpen: false,
+  setLoginModalOpen: (value) => set({ isLoginModalOpen: value }),
+  setOpportunityModalOpen: (value) => set({ isOpportunityModalOpen: value }),
 }));
 
 export default useModalStore;

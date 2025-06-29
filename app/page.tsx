@@ -1,11 +1,17 @@
 "use client";
+import { LoginForm } from "@/components/auth/login";
 import { MobileNavMenu, MobileNavSearch } from "@/components/mobile-nav";
 import Navbar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
+import useModalStore from "@/stores/modal";
 import Image from "next/image";
 
 export default function Home() {
+  const isOpen = useModalStore((state) => state.isLoginModalOpen);
+  const setOpen = useModalStore((state) => state.setLoginModalOpen);
+
   const mockOpportunities = [
     {
       id: "1",
@@ -118,6 +124,14 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <Modal
+        trigger={null}
+        openModal={isOpen}
+        closeModal={() => setOpen(!isOpen)}
+      >
+        <LoginForm />
+      </Modal>
     </main>
   );
 }

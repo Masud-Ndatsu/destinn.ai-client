@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Modal } from "@/components/ui/modal";
-import { LoginForm } from "@/components/auth/login";
+import QueryProvider from "./query-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,10 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        {children}
-        <Modal title="Sign in" trigger={null}>
-          <LoginForm />
-        </Modal>
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

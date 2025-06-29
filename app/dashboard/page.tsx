@@ -1,10 +1,26 @@
+"use client";
 import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { DashboardChart } from "@/components/dashboard/dashboard-chart";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
-import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
-import { TabsTrigger } from "@radix-ui/react-tabs";
+import { CreateOpportunityForm } from "@/components/form/create-opportunity";
+import { Modal } from "@/components/ui/modal";
+import { getCategories } from "@/lib/actions/api";
+import useModalStore from "@/stores/modal";
+import { useQuery } from "@tanstack/react-query";
 
 export default function DashboardHome() {
+  const isOpen = useModalStore((state) => state.isOpportunityModalOpen);
+  const openModal = useModalStore((state) => state.setOpportunityModalOpen);
+
+  const {
+    data: categories = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
+
   return (
     <main>
       <header className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -47,6 +63,13 @@ export default function DashboardHome() {
 
       <section>
         <DashboardTabs />
+        <Modal
+          trigger={null}
+          openModal={isOpen}
+          closeModal={() => openModal(!isOpen)}
+        >
+          <CreateOpportunityForm categories={categories} />
+        </Modal>
       </section>
     </main>
   );
