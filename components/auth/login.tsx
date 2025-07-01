@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@/lib/utils";
+import { cn, scheduleAutoLogout } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,6 +15,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInUser } from "@/lib/actions/auth";
 import { useRouter } from "next/navigation";
+import useModalStore from "@/stores/modal";
 
 const schema = z.object({
   email: z.string(),
@@ -28,6 +29,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const setOpen = useModalStore((state) => state.setLoginModalOpen);
 
   const {
     register,
@@ -42,6 +44,13 @@ export function LoginForm({
     try {
       const response = await signInUser(data);
       if (response?.access_token) {
+        const token = response.access_token;
+
+        localStorage.setItem("token", token);
+        scheduleAutoLogout(token, () => {
+          localStorage.removeItem("token");
+          setOpen(true);
+        });
         reset();
         router.push("/dashboard");
       }

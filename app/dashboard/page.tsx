@@ -25,7 +25,6 @@ export default function DashboardHome() {
     return <h1>Data Loading...</h1>;
   }
 
-  console.log({ data });
   const categories = data?.data;
 
   return (

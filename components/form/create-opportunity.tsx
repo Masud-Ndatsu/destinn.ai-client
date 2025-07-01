@@ -25,13 +25,11 @@ const opportunitySchema = z.object({
   source_url: z.string().url("Link must be a valid URL."),
 });
 
-type OpportunityForm = z.infer<typeof opportunitySchema>;
+type OpportunityFormInput = z.infer<typeof opportunitySchema>;
 
 type OpportunityProp = {
   categories: Category[];
 };
-
-// ...existing imports and code...
 
 export function CreateOpportunityForm({ categories }: OpportunityProp) {
   const {
@@ -39,7 +37,7 @@ export function CreateOpportunityForm({ categories }: OpportunityProp) {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<OpportunityForm>({
+  } = useForm<OpportunityFormInput>({
     resolver: zodResolver(opportunitySchema),
   });
 
@@ -57,11 +55,13 @@ export function CreateOpportunityForm({ categories }: OpportunityProp) {
     }
   };
 
-  const onSubmit: SubmitHandler<OpportunityForm> = async (data) => {
+  const onSubmit: SubmitHandler<OpportunityFormInput> = async (data) => {
     try {
+      console.log({ data });
       // Validate banner
       if (!banner) {
         setBannerError("Image is required");
+        console.error("Banner Error");
         return;
       }
       console.log({ banner });
@@ -95,7 +95,6 @@ export function CreateOpportunityForm({ categories }: OpportunityProp) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* ...rest of the form remains unchanged... */}
       <Input
         {...register("title")}
         placeholder="Opportunity Title"
@@ -190,7 +189,7 @@ export function CreateOpportunityForm({ categories }: OpportunityProp) {
 
       <Button
         type="submit"
-        disabled={isSubmitting}
+        // disabled={isSubmitting}
         className="w-full rounded-none"
       >
         Submit

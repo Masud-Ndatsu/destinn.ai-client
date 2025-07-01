@@ -1,4 +1,5 @@
 import { http } from "@/lib/http";
+import { scheduleAutoLogout } from "../utils";
 
 interface SignInPayload {
   email: string;
@@ -22,9 +23,5 @@ export async function signInUser(
     "/auth/login",
     payload
   );
-  // Store token (optional)
-  if (typeof window !== "undefined") {
-    localStorage.setItem("token", response.data.data.access_token);
-  }
   return response.data.data;
 }

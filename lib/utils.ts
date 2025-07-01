@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { http } from "./http";
 import { AxiosRequestConfig } from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -48,5 +49,24 @@ export async function uploadFile(
   } catch (error) {
     console.error("Banner upload error:", error);
     return null;
+  }
+}
+
+function getTokenExpiration(token: string): number {
+  const decoded: { exp: number } = jwtDecode(token);
+  console.log({ decoded });
+  return decoded.exp * 1000; // convert to milliseconds
+}
+
+export function scheduleAutoLogout(token: string, onLogout: () => void) {
+  const expiryTime = getTokenExpiration(token);
+  const timeLeft = expiryTime - Date.now();
+
+  if (timeLeft <= 0) {
+    onLogout();
+  } else {
+    setTimeout(() => {
+      onLogout();
+    }, timeLeft);
   }
 }
