@@ -9,7 +9,8 @@ interface GetCategoriesResponse {
   data: Category[];
 }
 
-export async function getCategories(): Promise<Category[]> {
-  const response = await http.get<GetCategoriesResponse>("/categories");
-  return response.data.data;
+export async function getCategories(): Promise<{ data: Category[] }> {
+  const response = await http.get("/categories");
+  console.log({ response });
+  return response.data;
 }

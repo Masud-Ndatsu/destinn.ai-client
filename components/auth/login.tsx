@@ -14,6 +14,7 @@ import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInUser } from "@/lib/actions/auth";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   email: z.string(),
@@ -26,6 +27,8 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -36,10 +39,15 @@ export function LoginForm({
   });
 
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
-    console.log("This is saves :", data);
-    const response = await signInUser(data);
-    console.log(response);
-    reset();
+    try {
+      const response = await signInUser(data);
+      if (response?.access_token) {
+        reset();
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+    }
   };
 
   return (

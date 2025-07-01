@@ -74,7 +74,7 @@ const Navbar = () => {
           </Link>
         ) : (
           <Button
-            variant="outline"
+            variant="default"
             className="rounded-none"
             onClick={handleSignInClick}
           >

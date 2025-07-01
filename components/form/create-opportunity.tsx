@@ -7,19 +7,22 @@ import { Label } from "@/components/ui/label";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Category } from "@/lib/actions/api";
+import { createOpportunity } from "@/lib/actions/opportunity";
+import { uploadFile } from "@/lib/utils";
 
 const opportunitySchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters."),
   company: z.string().min(1, "Company name is required."),
   location: z.string().min(1, "Location is required."),
   deadline: z.string().min(1, "Deadline is required."),
-  link: z.string().url("Link must be a valid URL."),
+  application_link: z.string().url("Link must be a valid URL."),
   category_id: z.string().min(1, "Category is required."),
   description: z
     .string()
     .min(10, "Description must be at least 10 characters."),
+  source_url: z.string().url("Link must be a valid URL."),
 });
 
 type OpportunityForm = z.infer<typeof opportunitySchema>;
@@ -27,6 +30,8 @@ type OpportunityForm = z.infer<typeof opportunitySchema>;
 type OpportunityProp = {
   categories: Category[];
 };
+
+// ...existing imports and code...
 
 export function CreateOpportunityForm({ categories }: OpportunityProp) {
   const {
@@ -53,28 +58,44 @@ export function CreateOpportunityForm({ categories }: OpportunityProp) {
   };
 
   const onSubmit: SubmitHandler<OpportunityForm> = async (data) => {
-    if (!banner) {
-      setBannerError("Image is required");
-      return;
-    }
-
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => formData.append(key, value));
-    formData.append("banner", banner);
-
     try {
-      // Send formData to API
-      console.log("Form submitted:", data);
+      // Validate banner
+      if (!banner) {
+        setBannerError("Image is required");
+        return;
+      }
+      console.log({ banner });
+      // Upload banner and get URL
+      const uploaded = await uploadFile(banner, "opportunity_banners");
+      if (!uploaded || typeof uploaded !== "string") {
+        setBannerError("Failed to upload image");
+        return;
+      }
+
+      // Prepare data with uploaded image URL
+      const payload = {
+        ...data,
+        source_url: uploaded,
+      };
+
+      // Send opportunity data to backend
+      const response = await createOpportunity(payload);
+
+      // Reset form and banner state on success
       reset();
       setBanner(null);
       setBannerError(null);
+      // Optionally, show a success message or redirect
+      console.log("Form submitted:", payload, response);
     } catch (error) {
+      setBannerError("Error submitting form");
       console.error("Error submitting form:", error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* ...rest of the form remains unchanged... */}
       <Input
         {...register("title")}
         placeholder="Opportunity Title"
@@ -113,12 +134,14 @@ export function CreateOpportunityForm({ categories }: OpportunityProp) {
       )}
 
       <Input
-        {...register("link")}
+        {...register("application_link")}
         placeholder="Application Link"
         className="rounded-none"
       />
-      {errors.link && (
-        <p className="text-sm text-red-500">{errors.link.message}</p>
+      {errors.application_link && (
+        <p className="text-sm text-red-500">
+          {errors.application_link.message}
+        </p>
       )}
 
       <div>

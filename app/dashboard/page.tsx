@@ -12,14 +12,21 @@ export default function DashboardHome() {
   const isOpen = useModalStore((state) => state.isOpportunityModalOpen);
   const openModal = useModalStore((state) => state.setOpportunityModalOpen);
 
-  const {
-    data: categories = [],
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
   });
+
+  if (isError) {
+    return <h1>Error Fetching Data</h1>;
+  }
+
+  if (isLoading) {
+    return <h1>Data Loading...</h1>;
+  }
+
+  console.log({ data });
+  const categories = data?.data;
 
   return (
     <main>
@@ -68,7 +75,7 @@ export default function DashboardHome() {
           openModal={isOpen}
           closeModal={() => openModal(!isOpen)}
         >
-          <CreateOpportunityForm categories={categories} />
+          <CreateOpportunityForm categories={categories || []} />
         </Modal>
       </section>
     </main>

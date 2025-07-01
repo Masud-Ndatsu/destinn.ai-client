@@ -27,7 +27,6 @@ http.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     const message = (error.response?.data as any)?.message || error.message;
-    console.error("[HTTP Error]:", message);
     return Promise.reject(error);
   }
 );
