@@ -8,7 +8,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import React, { useState } from "react";
-import { Category } from "@/lib/actions/api";
+import { Category } from "@/lib/actions/category";
 import { createOpportunity } from "@/lib/actions/opportunity";
 import { uploadFile } from "@/lib/utils";
 

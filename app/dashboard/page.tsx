@@ -4,7 +4,7 @@ import { DashboardChart } from "@/components/dashboard/dashboard-chart";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 import { CreateOpportunityForm } from "@/components/form/create-opportunity";
 import { Modal } from "@/components/ui/modal";
-import { getCategories } from "@/lib/actions/api";
+import { getCategories } from "@/lib/actions/category";
 import useModalStore from "@/stores/modal";
 import { useQuery } from "@tanstack/react-query";
 
