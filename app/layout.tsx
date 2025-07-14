@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "./query-provider";
+import { Providers } from "./theme-provider";
+import { Suspense } from "react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,9 +20,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
-        <QueryProvider>{children}</QueryProvider>
+        <Providers>
+          <QueryProvider>
+            <Suspense fallback={<div className="p-4">Loading...</div>}>
+              {children}
+            </Suspense>
+          </QueryProvider>
+        </Providers>
       </body>
     </html>
   );
