@@ -1,6 +1,13 @@
 "use client";
-import { useState, useMemo } from "react";
-import { Search, Grid, List, Filter } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import {
+  Search,
+  Grid,
+  List,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Navbar } from "@/components/Navbar";
@@ -11,340 +18,604 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useQuery } from "@tanstack/react-query";
+import { getOpportunities } from "@/lib/actions/opportunity";
+import { getCategories } from "@/lib/actions/category";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock data for opportunities
-const opportunities = [
-  {
-    id: 1,
-    title: "Google Summer of Code 2024",
-    type: "Internship",
-    category: "Technology",
-    deadline: "2024-03-15",
-    location: "Remote",
-    amount: "$6,000",
-    description:
-      "Contribute to open source projects while getting mentored by industry experts. This is a 12-week program where students work on meaningful projects.",
-    tags: ["Programming", "Open Source", "Mentorship"],
-    applicationInstructions:
-      "Submit your proposal through the official GSoC website. Include your background, project proposal, and timeline.",
-    applyUrl: "https://summerofcode.withgoogle.com",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "Rhodes Scholarship",
-    type: "Scholarship",
-    category: "Education",
-    deadline: "2024-10-01",
-    location: "Oxford, UK",
-    amount: "Full Funding",
-    description:
-      "Prestigious scholarship for outstanding students to study at the University of Oxford. Covers all expenses including tuition, accommodation, and living costs.",
-    tags: ["Graduate Study", "Leadership", "International"],
-    applicationInstructions:
-      "Complete the online application including personal statement, academic transcripts, and recommendation letters.",
-    applyUrl: "https://www.rhodeshouse.ox.ac.uk",
-    featured: true,
-  },
-  {
-    id: 3,
-    title: "NASA Space Grant",
-    type: "Grant",
-    category: "STEM",
-    deadline: "2024-02-28",
-    location: "USA",
-    amount: "$15,000",
-    description:
-      "Support for students pursuing space-related research and career paths. Open to undergraduate and graduate students in STEM fields.",
-    tags: ["Space", "Research", "STEM"],
-    applicationInstructions:
-      "Submit research proposal, budget, and advisor recommendation through the NASA grants portal.",
-    applyUrl:
-      "https://www.nasa.gov/audience/forstudents/postsecondary/features/F_Space_Grant.html",
-    featured: false,
-  },
-  {
-    id: 4,
-    title: "Y Combinator Startup School",
-    type: "Program",
-    category: "Entrepreneurship",
-    deadline: "Rolling",
-    location: "Remote",
-    amount: "Free",
-    description:
-      "Free online course for entrepreneurs looking to start a company. Learn from successful founders and get access to startup resources.",
-    tags: ["Startup", "Business", "Entrepreneurship"],
-    applicationInstructions:
-      "Sign up on the Startup School website and complete the online application form.",
-    applyUrl: "https://www.startupschool.org",
-    featured: false,
-  },
-  {
-    id: 5,
-    title: "Fulbright Scholarship",
-    type: "Scholarship",
-    category: "Education",
-    deadline: "2024-09-15",
-    location: "Various Countries",
-    amount: "Full Funding",
-    description:
-      "International educational exchange program providing opportunities for students to study abroad.",
-    tags: ["International", "Study Abroad", "Cultural Exchange"],
-    applicationInstructions:
-      "Apply through your home country's Fulbright commission with complete application package.",
-    applyUrl: "https://fulbrightscholars.org",
-    featured: false,
-  },
-];
+// Type definitions based on your data structure
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  thumbnail_url: string | null;
+  created_at: string;
+}
+
+interface Opportunity {
+  id: string;
+  title: string;
+  description: string;
+  application_url: string;
+  category_id: string;
+  deadline: string;
+  location: string;
+  source_type: string;
+  source_url: string;
+  is_approved: boolean;
+  created_at: string;
+  updated_at: string;
+  created_by_id: string | null;
+}
+
+interface OpportunityWithCategory extends Opportunity {
+  category?: Category;
+  type?: string;
+  amount?: string;
+  tags?: string[];
+  featured?: boolean;
+}
+
+interface ApiResponse {
+  data: Opportunity[];
+  meta: {
+    total: number;
+    totalPages: number;
+    currentPage: number;
+    perPage: number;
+  };
+}
 
 export default function Opportunities() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(20); // Matches API's default perPage
+  const [totalPages, setTotalPages] = useState(0);
+
+  // Data fetching with pagination
+  const {
+    data: opportunitiesResponse,
+    isLoading: oppsLoading,
+    isError: oppsError,
+    refetch: refetchOpportunities,
+  } = useQuery({
+    queryKey: ["opportunities", currentPage],
+    queryFn: () => getOpportunities(currentPage),
+    // keepPreviousData: true,
+  });
+
+  const {
+    data: categoriesData,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+    refetch: refetchCategories,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => getCategories(),
+  });
+
+  // Update total pages when data loads
+  useEffect(() => {
+    if (opportunitiesResponse?.data!.meta) {
+      setTotalPages(opportunitiesResponse.data.meta.totalPages);
+    }
+  }, [opportunitiesResponse]);
+
+  // Transform and normalize the data
+  const opportunities: OpportunityWithCategory[] = useMemo(() => {
+    if (!opportunitiesResponse?.data.data || !categoriesData?.data) return [];
+
+    const categoriesMap = new Map(
+      categoriesData.data.map((cat: Category) => [cat.id, cat])
+    );
+
+    return opportunitiesResponse.data.data.map((opp: Opportunity | any) => ({
+      ...opp,
+      category: categoriesMap.get(opp.category_id),
+      type: "Opportunity",
+      amount: "N/A",
+      tags: [],
+      featured: false,
+    }));
+  }, [opportunitiesResponse, categoriesData]);
+
+  const categories = categoriesData?.data || [];
+
+  // Extract unique locations for filtering
+  const uniqueLocations = useMemo(() => {
+    const locations = new Set<string>();
+    opportunities.forEach((opp) => locations.add(opp.location));
+    return Array.from(locations);
+  }, [opportunities]);
+
+  // Initialize filters with all categories
   const [selectedFilters, setSelectedFilters] = useState({
     categories: [] as string[],
     types: [] as string[],
     locations: [] as string[],
     deadlines: [] as string[],
   });
+
+  // Set initial categories when categories are loaded
+  useEffect(() => {
+    if (categories.length > 0) {
+      setSelectedFilters((prev) => ({
+        ...prev,
+        categories: categories.map((cat: Category) => cat.name),
+      }));
+    }
+  }, [categories]);
+
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("newest");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedOpportunity, setSelectedOpportunity] = useState<
-    (typeof opportunities)[0] | null
-  >(null);
+  const [selectedOpportunity, setSelectedOpportunity] =
+    useState<OpportunityWithCategory | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-
-  const itemsPerPage = 6;
 
   // Filter and search logic
   const filteredOpportunities = useMemo(() => {
-    let filtered = opportunities;
+    let filtered = [...opportunities];
 
     // Search filter
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (opp) =>
-          opp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          opp.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          opp.tags.some((tag) =>
-            tag.toLowerCase().includes(searchQuery.toLowerCase())
-          )
+          opp.title.toLowerCase().includes(query) ||
+          (opp.category?.name.toLowerCase().includes(query) ?? false) ||
+          opp.location.toLowerCase().includes(query) ||
+          opp.description.toLowerCase().includes(query)
       );
     }
 
     // Category filter
     if (selectedFilters.categories.length > 0) {
-      filtered = filtered.filter((opp) =>
-        selectedFilters.categories.includes(opp.category)
+      filtered = filtered.filter(
+        (opp) =>
+          opp.category && selectedFilters.categories.includes(opp.category.name)
       );
     }
 
-    // Type filter
-    if (selectedFilters.types.length > 0) {
+    // Location filter
+    if (selectedFilters.locations.length > 0) {
       filtered = filtered.filter((opp) =>
-        selectedFilters.types.includes(opp.type)
+        selectedFilters.locations.includes(opp.location)
       );
     }
 
-    // Sort
+    // Deadline filter with rolling deadline support
+    if (selectedFilters.deadlines.length > 0) {
+      const now = new Date();
+      filtered = filtered.filter((opp) => {
+        // Handle rolling deadlines
+        if (opp.deadline === "Rolling" || opp.deadline === "Ongoing") {
+          return selectedFilters.deadlines.includes("Rolling");
+        }
+
+        try {
+          const deadline = new Date(opp.deadline);
+          const daysUntilDeadline = Math.ceil(
+            (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+          );
+
+          return selectedFilters.deadlines.some((filter) => {
+            switch (filter) {
+              case "This week":
+                return daysUntilDeadline <= 7;
+              case "This month":
+                return daysUntilDeadline <= 30;
+              case "Next 3 months":
+                return daysUntilDeadline <= 90;
+              case "Rolling":
+                return true;
+              default:
+                return true;
+            }
+          });
+        } catch (e) {
+          return false;
+        }
+      });
+    }
+
+    // Sort logic
     switch (sortBy) {
       case "deadline":
-        filtered.sort(
-          (a, b) =>
+        filtered.sort((a, b) => {
+          // Handle rolling deadlines
+          if (a.deadline === "Rolling" && b.deadline === "Rolling") return 0;
+          if (a.deadline === "Rolling") return 1;
+          if (b.deadline === "Rolling") return -1;
+
+          return (
             new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
-        );
+          );
+        });
         break;
       case "popular":
         filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
         break;
-      default:
-        // newest first
-        filtered.sort((a, b) => b.id - a.id);
+      case "oldest":
+        filtered.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+        break;
+      default: // newest first
+        filtered.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
     }
 
     return filtered;
-  }, [searchQuery, selectedFilters, sortBy]);
+  }, [searchQuery, selectedFilters, sortBy, opportunities]);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredOpportunities.length / itemsPerPage);
-  const paginatedOpportunities = filteredOpportunities.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  // Get related opportunities for modal
+  const getRelatedOpportunities = (opportunity: OpportunityWithCategory) => {
+    return opportunities
+      .filter(
+        (opp) =>
+          opp.id !== opportunity.id &&
+          opp.category_id === opportunity.category_id
+      )
+      .slice(0, 3);
+  };
+
+  // Transform opportunity for components
+  const transformOpportunityForCard = (opp: OpportunityWithCategory) => ({
+    ...opp,
+    category: opp.category?.name || "Unknown",
+    applyUrl: opp.application_url,
+    applicationInstructions: `Visit the application link to apply for this opportunity.`,
+  });
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Generate pagination items
+  const paginationItems = useMemo(() => {
+    const items = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    // Adjust if we're at the start or end
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // Previous button
+    items.push(
+      <PaginationItem key="prev">
+        <Button
+          variant="ghost"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1 || oppsLoading}
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+        </Button>
+      </PaginationItem>
+    );
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <Button
+            variant={currentPage === i ? "default" : "ghost"}
+            onClick={() => handlePageChange(i)}
+            disabled={oppsLoading}
+          >
+            {i}
+          </Button>
+        </PaginationItem>
+      );
+    }
+
+    // Next button
+    items.push(
+      <PaginationItem key="next">
+        <Button
+          variant="ghost"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages || oppsLoading}
+        >
+          Next <ChevronRight className="h-4 w-4 ml-1" />
+        </Button>
+      </PaginationItem>
+    );
+
+    return items;
+  }, [currentPage, totalPages, oppsLoading]);
+
+  // Loading state
+  if (oppsLoading || categoriesLoading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
+            {/* Search Header Skeleton */}
+            <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-16 z-40">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  <Skeleton className="h-10 w-full max-w-lg" />
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-9 w-20" />
+                    <Skeleton className="h-9 w-16" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-8 mt-8">
+              {/* Sidebar Skeleton */}
+              <div className="hidden lg:block w-80 space-y-6">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="space-y-4">
+                    <Skeleton className="h-6 w-32" />
+                    {[...Array(3)].map((_, j) => (
+                      <div key={j} className="flex items-center space-x-2">
+                        <Skeleton className="h-4 w-4 rounded" />
+                        <Skeleton className="h-4 w-32" />
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+
+              {/* Main Content Skeleton */}
+              <div className="flex-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <Skeleton key={i} className="h-80 rounded-xl" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Error state
+  if (oppsError || categoriesError) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
+            <div className="flex flex-col items-center justify-center h-[50vh] text-center">
+              <div className="mb-6 bg-red-100 dark:bg-red-900/20 p-4 rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-12 w-12 text-red-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Failed to load data</h2>
+              <p className="text-muted-foreground mb-6 max-w-md">
+                {oppsError.valueOf() ||
+                  categoriesError.valueOf() ||
+                  "Please try again later"}
+              </p>
+              <div className="flex gap-3">
+                <Button onClick={() => refetchOpportunities()}>
+                  Retry Opportunities
+                </Button>
+                <Button variant="outline" onClick={() => refetchCategories()}>
+                  Retry Categories
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Get current page data
+  const currentPageData = opportunitiesResponse?.data?.data || [];
+  const totalItems = opportunitiesResponse?.data?.meta?.total || 0;
+  const currentPageMeta = opportunitiesResponse?.data?.meta || {
+    currentPage: 1,
+    perPage: 20,
+    total: 0,
+    totalPages: 1,
+  };
+
+  // Calculate showing range
+  const startItem =
+    (currentPageMeta.currentPage - 1) * currentPageMeta.perPage + 1;
+  const endItem = Math.min(
+    currentPageMeta.currentPage * currentPageMeta.perPage,
+    currentPageMeta.total
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Navbar />
 
-      {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-16 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          {/* <h1 className="text-3xl font-bold text-foreground mb-4">
-            Browse Opportunities
-          </h1> */}
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-16 z-40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            {/* Search Bar */}
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <div className="relative flex-1 max-w-lg">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search by title, category, location, or description..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
 
-          {/* Search Bar */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <div className="relative flex-1 max-w-lg">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search by title, category, country..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+              {/* View Toggle & Filters */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="lg:hidden"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filters
+                </Button>
+
+                <div className="flex border rounded-md">
+                  <Button
+                    variant={viewMode === "grid" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("grid")}
+                    className="rounded-r-none"
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "list" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("list")}
+                    className="rounded-l-none"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex gap-8">
+            {/* Sidebar */}
+            <div
+              className={`${
+                showFilters ? "block" : "hidden"
+              } lg:block w-full lg:w-80 space-y-10`}
+            >
+              <FilterSidebar
+                selectedFilters={selectedFilters}
+                onFiltersChange={setSelectedFilters}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                categories={categories}
+                locations={uniqueLocations}
               />
             </div>
 
-            {/* View Toggle & Filters */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
-
-              <div className="flex border rounded-md">
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className="rounded-r-none"
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className="rounded-l-none"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
+            {/* Main Content */}
+            <div className="flex-1">
+              {/* Results Header */}
+              <div className="flex justify-between items-center mb-6">
+                <p className="text-muted-foreground">
+                  Showing {startItem} - {endItem} of {totalItems} opportunities
+                </p>
               </div>
+
+              {/* Opportunity Cards */}
+              {oppsLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[...Array(currentPageMeta.perPage)].map((_, i) => (
+                    <Skeleton key={i} className="h-80 rounded-xl" />
+                  ))}
+                </div>
+              ) : (
+                <>
+                  <div
+                    className={`${
+                      viewMode === "grid"
+                        ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                        : "space-y-4"
+                    }`}
+                  >
+                    {opportunities.map((opportunity) => (
+                      <OpportunityCard
+                        key={opportunity.id}
+                        opportunity={transformOpportunityForCard(opportunity)}
+                        viewMode={viewMode}
+                        onClick={() => setSelectedOpportunity(opportunity)}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Empty State */}
+                  {currentPageData.length === 0 && (
+                    <div className="text-center py-12">
+                      <p className="text-lg text-muted-foreground mb-2">
+                        No opportunities found
+                      </p>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Try adjusting your search or filters
+                      </p>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setSearchQuery("");
+                          setSelectedFilters({
+                            categories: categories.map(
+                              (cat: Category) => cat.name
+                            ),
+                            types: [],
+                            locations: [],
+                            deadlines: [],
+                          });
+                        }}
+                      >
+                        Clear all filters
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8 flex justify-center">
+                  <Pagination>
+                    <PaginationContent>{paginationItems}</PaginationContent>
+                  </Pagination>
+
+                  <div className="ml-4 flex items-center text-sm text-muted-foreground">
+                    <span>
+                      Page {currentPage} of {totalPages}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Opportunity Detail Modal */}
+        {selectedOpportunity && (
+          <OpportunityDetailModal
+            opportunity={transformOpportunityForCard(selectedOpportunity)}
+            isOpen={!!selectedOpportunity}
+            onClose={() => setSelectedOpportunity(null)}
+            relatedOpportunities={getRelatedOpportunities(
+              selectedOpportunity
+            ).map(transformOpportunityForCard)}
+          />
+        )}
       </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
-        <div className="flex gap-8">
-          {/* Sidebar */}
-          <div
-            className={`${
-              showFilters ? "block" : "hidden"
-            } lg:block w-full lg:w-80 space-y-10`}
-          >
-            <FilterSidebar
-              selectedFilters={selectedFilters}
-              onFiltersChange={setSelectedFilters}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-            />
-          </div>
-
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Results Header */}
-            <div className="flex justify-between items-center mb-6">
-              <p className="text-muted-foreground">
-                Showing {paginatedOpportunities.length} of{" "}
-                {filteredOpportunities.length} opportunities
-              </p>
-            </div>
-
-            {/* Opportunity Cards */}
-            <div
-              className={`${
-                viewMode === "grid"
-                  ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                  : "space-y-4"
-              }`}
-            >
-              {paginatedOpportunities.map((opportunity) => (
-                <OpportunityCard
-                  key={opportunity.id}
-                  opportunity={opportunity}
-                  viewMode={viewMode}
-                  onClick={() => setSelectedOpportunity(opportunity)}
-                />
-              ))}
-            </div>
-
-            {/* Empty State */}
-            {filteredOpportunities.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-lg text-muted-foreground mb-2">
-                  No opportunities found
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Try adjusting your search or filters
-                </p>
-              </div>
-            )}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-8">
-                <Pagination>
-                  <PaginationContent>
-                    {currentPage > 1 && (
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                        />
-                      </PaginationItem>
-                    )}
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (page) => (
-                        <PaginationItem key={page}>
-                          <PaginationLink
-                            onClick={() => setCurrentPage(page)}
-                            isActive={currentPage === page}
-                          >
-                            {page}
-                          </PaginationLink>
-                        </PaginationItem>
-                      )
-                    )}
-
-                    {currentPage < totalPages && (
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                        />
-                      </PaginationItem>
-                    )}
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Opportunity Detail Modal */}
-      {selectedOpportunity && (
-        <OpportunityDetailModal
-          opportunity={selectedOpportunity}
-          isOpen={!!selectedOpportunity}
-          onClose={() => setSelectedOpportunity(null)}
-          relatedOpportunities={opportunities
-            .filter(
-              (opp) =>
-                opp.id !== selectedOpportunity.id &&
-                opp.category === selectedOpportunity.category
-            )
-            .slice(0, 3)}
-        />
-      )}
-    </div>
+    </>
   );
 }
