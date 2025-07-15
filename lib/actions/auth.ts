@@ -6,22 +6,60 @@ interface SignInPayload {
   password: string;
 }
 
+export interface SignUpPayload {
+  email: string;
+  password: string;
+  first_name?: string;
+  last_name?: string;
+  education_level?: string;
+  experience_years?: number;
+  interests?: string[];
+}
+
 interface SignInResponse {
-  access_token: string;
-  user: {
+  success: boolean;
+  message: string;
+  data: {
+    access_token: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+    };
+  };
+}
+
+interface SignUpResponse {
+  success: boolean;
+  message: string;
+  data: {
     id: string;
-    name: string;
     email: string;
     role: string;
+    first_name?: string;
+    last_name?: string;
   };
 }
 
 export async function signInUser(
   payload: SignInPayload
 ): Promise<SignInResponse> {
-  const response = await http.post<{ data: SignInResponse }>(
-    "/auth/login",
-    payload
-  );
-  return response.data.data;
+  const response = await http.post<SignInResponse>("/auth/login", payload);
+  return response.data;
+}
+
+export async function signUpUser(
+  payload: SignUpPayload
+): Promise<SignUpResponse> {
+  try {
+    const response = await http.post<SignUpResponse>("/auth/register", payload);
+
+    return response.data;
+  } catch (error: any) {
+    const message =
+      error?.response?.data?.message ||
+      "Registration failed. Please try again.";
+    throw new Error(message);
+  }
 }

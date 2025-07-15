@@ -472,7 +472,7 @@ export default function Opportunities() {
       return [];
 
     const categoriesMap = new Map(
-      categoriesData.data.map((cat: Category) => [cat.id, cat])
+      categoriesData.data?.data.map((cat: Category) => [cat.id, cat])
     );
 
     return (opportunitiesResponse || opps).data.data.map(
@@ -487,7 +487,7 @@ export default function Opportunities() {
     );
   }, [opportunitiesResponse, categoriesData]);
 
-  const categories = categoriesData?.data || [];
+  const categories = categoriesData?.data?.data || [];
 
   // Extract unique locations for filtering
   const uniqueLocations = useMemo(() => {
@@ -815,8 +815,6 @@ export default function Opportunities() {
 
   return (
     <>
-      <Navbar />
-
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-16 z-40">

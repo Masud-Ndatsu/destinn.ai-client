@@ -15,6 +15,7 @@ import * as z from "zod";
 import { create } from "zustand";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { signInUser, signUpUser } from "@/lib/actions/auth";
 
 // Zustand store for auth state
 interface AuthState {
@@ -92,25 +93,43 @@ export const AuthModal = ({
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const onSubmit = (data: AuthFormData) => {
+  const onSubmit = async (data: AuthFormData) => {
+    const {
+      email,
+      password,
+      educationLevel,
+      experienceYears,
+      firstName,
+      lastName,
+    } = data;
+
     if (isSignUp) {
-      setUser({
-        email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        educationLevel: data.educationLevel,
-        experienceYears: data.experienceYears || 0,
+      const response = await signUpUser({
+        email,
+        password,
+        first_name: firstName,
+        last_name: lastName,
+        education_level: educationLevel,
+        experience_years: experienceYears || 0,
         interests: data.interests?.split(",").map((i) => i.trim()) || [],
-        isGuest: false,
       });
+      console.log({ response });
+
+      if (response.success) {
+        updateModeParam("signin");
+      }
     } else {
-      setUser({
-        email: data.email,
-        isGuest: false,
+      const response = await signInUser({
+        email,
+        password,
       });
+      form.reset();
+      onClose();
+
+      if (response.success) {
+        updateModeParam("signin");
+      }
     }
-    form.reset();
-    onClose();
   };
   const handleGuestContinue = () => {
     // setUser({ isGuest: true });
@@ -132,7 +151,7 @@ export const AuthModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md z-[900]">
         <DialogHeader>
           <DialogTitle className="text-center">
             {isSignUp ? "Create Account" : "Welcome Back"}
