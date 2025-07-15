@@ -70,3 +70,10 @@ export function scheduleAutoLogout(token: string, onLogout: () => void) {
     }, timeLeft);
   }
 }
+
+export const scrollToChat = () => {
+  const chatWidget = document.querySelector("[data-chat-widget]");
+  if (chatWidget) {
+    chatWidget.scrollIntoView({ behavior: "smooth" });
+  }
+};

@@ -16,6 +16,7 @@ import { create } from "zustand";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { signInUser, signUpUser } from "@/lib/actions/auth";
+import { UserRole } from "@/enum";
 
 // Zustand store for auth state
 interface AuthState {
@@ -27,6 +28,7 @@ interface AuthState {
     experienceYears?: number;
     interests?: string[];
     isGuest: boolean;
+    role?: UserRole;
   } | null;
   setUser: (user: AuthState["user"]) => void;
 }
@@ -123,16 +125,40 @@ export const AuthModal = ({
         email,
         password,
       });
-      form.reset();
-      onClose();
 
       if (response.success) {
-        updateModeParam("signin");
+        // Set user data in Zustand store
+        setUser({
+          email: response.data.user.email,
+          firstName: response.data.user.first_name,
+          lastName: response.data.user.last_name,
+          educationLevel: response.data.user.education_level,
+          experienceYears: response.data.user.experience_years,
+          interests: response.data.user.interests,
+          isGuest: false,
+          role: response!.data.user.role, // Add role from response
+        });
+
+        form.reset();
+        onClose();
+
+        // Redirect based on user role
+        if (response.data.user.role === UserRole.ADMIN) {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
       }
     }
   };
+
   const handleGuestContinue = () => {
-    // setUser({ isGuest: true });
+    // Set guest user data
+    setUser({
+      email: "guest@example.com",
+      isGuest: true,
+      role: UserRole.USER,
+    });
     form.reset();
     onContinueAsGuest();
   };

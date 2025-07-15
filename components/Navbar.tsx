@@ -4,48 +4,29 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { CategoryDropdown } from "@/components/CategoryDropdown";
-import { AuthModal } from "@/components/AuthModal";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./ui/theme-toggle";
+import useModalStore from "@/stores/modal";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const router = useRouter();
+  const setLoginModalOpen = useModalStore((state) => state.setLoginModalOpen);
   const pathname = usePathname();
 
-  const scrollToChat = () => {
-    const chatWidget = document.querySelector("[data-chat-widget]");
-    if (chatWidget) {
-      chatWidget.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   const handleGetCareerAdvice = () => {
-    setIsAuthModalOpen(true);
-  };
-
-  const handleContinueAsGuest = () => {
-    setIsAuthModalOpen(false);
-    // Navigate to home page first if not already there, then scroll to chat
-    if (pathname !== "/") {
-      router.push("/");
-      setTimeout(() => scrollToChat(), 100);
-    } else {
-      scrollToChat();
-    }
+    setLoginModalOpen(true);
   };
 
   const handleMenuItemClick = () => {
-    setIsMenuOpen(false);
+    // setIsMenuOpen(false);
   };
 
   const isActive = (path: string) => pathname === path;
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 w-full bg-accent backdrop-blur-sm z-[500] border-b overflow-hidden">
+      <nav className="fixed top-0 left-0 right-0 w-full bg-accent backdrop-blur-sm z-[500] border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -178,13 +159,6 @@ export const Navbar = () => {
           )}
         </div>
       </nav>
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onContinueAsGuest={handleContinueAsGuest}
-      />
     </>
   );
 };

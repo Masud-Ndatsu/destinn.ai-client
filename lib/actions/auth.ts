@@ -1,5 +1,6 @@
 import { http } from "@/lib/http";
 import { scheduleAutoLogout } from "../utils";
+import { UserRole } from "@/enum";
 
 interface SignInPayload {
   email: string;
@@ -22,10 +23,15 @@ interface SignInResponse {
   data: {
     access_token: string;
     user: {
+      interests: string[] | undefined;
+      experience_years: number | undefined;
+      education_level: string | undefined;
       id: string;
       name: string;
       email: string;
-      role: string;
+      role: UserRole;
+      first_name?: string;
+      last_name?: string;
     };
   };
 }
@@ -36,7 +42,7 @@ interface SignUpResponse {
   data: {
     id: string;
     email: string;
-    role: string;
+    role: UserRole;
     first_name?: string;
     last_name?: string;
   };
