@@ -984,9 +984,6 @@ export default function Opportunities() {
                     <Pagination>
                       <PaginationContent>{paginationItems}</PaginationContent>
                     </Pagination>
-                    <div className="ml-4 text-sm text-muted-foreground">
-                      Page {currentPage} of {totalPages}
-                    </div>
                   </div>
                 </div>
               )}
