@@ -152,7 +152,7 @@ export const OpportunityDetailModal = ({
       onClick={onClose}
     >
       <div
-        className="bg-background rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-xl"
+        className="bg-background rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-xl mt-16"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
