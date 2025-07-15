@@ -84,18 +84,18 @@ export const Navbar = () => {
                   Opportunities
                 </Link>
                 <CategoryDropdown />
-                <a
-                  href="#about"
+                <Link
+                  href="/#about"
                   className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
                 >
                   About
-                </a>
-                <a
-                  href="#contact"
+                </Link>
+                <Link
+                  href="/#contact"
                   className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
                 >
                   Contact
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -155,20 +155,20 @@ export const Navbar = () => {
                 </Link>
                 <CategoryDropdown />
 
-                <a
+                <Link
                   href="/#about"
                   onClick={handleMenuItemClick}
                   className="text-gray-600 hover:text-blue-600 block px-3 py-2 text-base font-medium"
                 >
                   About
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/#contact"
                   onClick={handleMenuItemClick}
                   className="text-gray-600 hover:text-blue-600 block px-3 py-2 text-base font-medium"
                 >
                   Contact
-                </a>
+                </Link>
                 <Button
                   onClick={handleGetCareerAdvice}
                   className="w-full mt-4 bg-gradient-to-r from-blue-600 to-[#3498db]/100 text-white"
