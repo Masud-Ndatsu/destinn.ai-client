@@ -1,4 +1,3 @@
-
 import { Bell, ChevronDown, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ThemeToggle } from "../ui/theme-toggle";
 
 export function AdminTopBar() {
   return (
@@ -21,7 +21,6 @@ export function AdminTopBar() {
       <div className="flex items-center space-x-4">
         <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
       </div>
-
       <div className="flex items-center space-x-4">
         {/* Date Range Selector */}
         <Select defaultValue="7days">
@@ -38,22 +37,22 @@ export function AdminTopBar() {
         </Select>
 
         {/* Notifications */}
-        <Button variant="ghost" size="sm" className="relative">
+        <Button variant="ghost" size="sm" className="relative text-gray-500">
           <Bell className="w-5 h-5" />
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
             3
           </span>
         </Button>
-
+        <ThemeToggle />
         {/* Profile Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-gray-300 text-sm font-medium">
                 A
               </div>
               <div className="text-left">
-                <p className="text-sm font-medium">Admin User</p>
+                <p className="text-sm font-medium text-gray-600">Admin User</p>
                 <p className="text-xs text-gray-500">Administrator</p>
               </div>
               <ChevronDown className="w-4 h-4" />

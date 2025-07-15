@@ -22,7 +22,7 @@ export const Footer = () => {
               AmbitfulAI
             </div>
 
-            <div className="space-y-2 text-gray-300">
+            <div className="space-y-2 text-gray-600">
               <div className="flex items-center dark:text-gray-400">
                 <Mail className="h-4 w-4 mr-2" />
                 hello@futurepathfinder.com
@@ -43,7 +43,7 @@ export const Footer = () => {
             <h3 className="text-lg font-semibold mb-4 dark:text-gray-300">
               Quick Links
             </h3>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-gray-600">
               <li>
                 <Link
                   href="#home"
@@ -110,7 +110,7 @@ export const Footer = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="text-gray-400 text-sm mb-4 md:mb-0">
+          <div className="text-gray-600 text-sm mb-4 md:mb-0">
             © 2024 FuturePathFinder. All rights reserved.
           </div>
 

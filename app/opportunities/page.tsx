@@ -67,6 +67,370 @@ interface ApiResponse {
   };
 }
 
+const opps = {
+  data: {
+    data: [
+      {
+        id: "cmcrfvbz00001q0lp9wq9c1g4",
+        title: "Jesi Young and Safe Scholarship – Cohort 3 for Ghanaians",
+        description:
+          "Applications are open for the Jesi Young and Safe Scholarship – Cohort 3. Jesi Young and Safe Scholarship is a digital employability…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/07/03/jesi-young-and-safe-scholarship-cohort-3/",
+        location: "Ghana",
+        deadline: "2025-07-28T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T08:57:20.988Z",
+        updated_at: "2025-07-06T08:57:20.988Z",
+      },
+      {
+        id: "cmcrfvcs70003q0lpbg9whi5i",
+        title:
+          "Lester B. Pearson International Scholarships at the University of Toronto 2026",
+        description:
+          "Applications are open for the Lester B. Pearson International Scholarships at the University of Toronto 2026. The Lester B. Pearson International Scholarships…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/07/02/lester-b-pearson-international-scholarships-2026/",
+        location: "Toronto, Canada",
+        deadline: "2025-10-10T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T08:57:22.040Z",
+        updated_at: "2025-07-06T08:57:22.040Z",
+      },
+      {
+        id: "cmcrfvdku0005q0lpugjjf4la",
+        title:
+          "Mastercard Foundation Scholars Program at the University of the Western Cape 2026 (Fully-funded)",
+        description:
+          "Applications are open for the Mastercard Foundation Scholars Program at the University of the Western Cape 2026. The University of the Western…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/27/mastercard-foundation-scholars-program-at-the-university-of-the-western-cape-2026/",
+        location: "University of the Western Cape, South Africa",
+        deadline: "2025-08-31T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T08:57:23.070Z",
+        updated_at: "2025-07-06T08:57:23.070Z",
+      },
+      {
+        id: "cmcrh1ywe0001q03qkd2gfghb",
+        title:
+          "10 Global Scholarship Opportunities Currently Open – June 26, 2025",
+        description:
+          "Looking for funding to support your academic or professional goals? As of June 26, 2025, here are 10 incredible scholarship opportunities currently open to students, changemakers,…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/26/10-scholarship-opportunities-currently-open-june-26-2025/",
+        location: "Global",
+        deadline: "1970-01-01T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:30:30.254Z",
+        updated_at: "2025-07-06T09:30:30.254Z",
+      },
+      {
+        id: "cmcrh22b40003q03qokpousk2",
+        title: "BBPA National Scholarship Program 2025 (up to $7,000)",
+        description:
+          "Applications are open for the BBPA National Scholarship Program 2025. The BBPA National Scholarship Program, established in 1986, provides financial assistance to…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/23/bbpa-national-scholarship-program-2025/",
+        location: "America",
+        deadline: "2025-07-06T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:30:34.449Z",
+        updated_at: "2025-07-06T09:30:34.449Z",
+      },
+      {
+        id: "cmcrh257w0005q03qfxakikls",
+        title: "Janine Williams Memorial Scholarship 2025 (up to $2,000)",
+        description:
+          "Applications are open for the Janine Williams Memorial Scholarship 2025. The Janine Williams Memorial Scholarship was created to honour past Tropicana President…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/23/janine-williams-memorial-scholarship-2025/",
+        location: "America",
+        deadline: "2025-06-30T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:30:38.444Z",
+        updated_at: "2025-07-06T09:30:38.444Z",
+      },
+      {
+        id: "cmcrh28600007q03q8buraa8v",
+        title: "Sterling Bank/Miva Open University Scholarship 2025",
+        description:
+          "Applications are open for the Sterling Bank/Miva Open University Scholarship 2025. Do you want to apply for a scholarship that truly changes lives? Sterling…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/19/sterling-bank-miva-open-university-scholarship-2025/",
+        location: "Africa",
+        deadline: "1970-01-01T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:30:42.265Z",
+        updated_at: "2025-07-06T09:30:42.265Z",
+      },
+      {
+        id: "cmcrh2b0p0009q03q12ta4092",
+        title:
+          "Cambridge Africa Changemakers Scholarship 2025 for PhD students (Fully-funded)",
+        description:
+          "Applications are open for the Cambridge Africa Changemakers Scholarship 2025. The Cambridge Africa Changemakers Scholarship is a programme of full-cost scholarships for PhD students…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/18/cambridge-africa-changemakers-scholarship-2025/",
+        location: "Africa",
+        deadline: "1970-01-01T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:30:45.961Z",
+        updated_at: "2025-07-06T09:30:45.961Z",
+      },
+      {
+        id: "cmcrh2etg000bq03qcd8opv76",
+        title:
+          "African STARS MSc Fellowship 2025 for Researchers (Fully-funded)",
+        description:
+          "Applications are invited for the African STARS MSc Fellowship 2025. The Centre for Epidemic Response and Innovation (CERI) at Stellenbosch University (South…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/11/african-stars-msc-fellowship-2025/",
+        location: "Africa",
+        deadline: "2025-06-26T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:30:50.880Z",
+        updated_at: "2025-07-06T09:30:50.880Z",
+      },
+      {
+        id: "cmcrh2i0n000dq03qdwqa57y8",
+        title: "SUNx Malta Climate Friendly Travel Diploma Scholarship 2025",
+        description:
+          "Applications are open for the SUNx Malta Climate Friendly Travel Diploma Scholarship 2025. The Diploma trains young graduates to become Climate Friendly…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/07/sunx-malta-climate-friendly-travel-diploma-scholarship-2025/",
+        location: "Malta",
+        deadline: "2025-07-15T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:30:55.031Z",
+        updated_at: "2025-07-06T09:30:55.031Z",
+      },
+      {
+        id: "cmcrh2l0s000fq03qs3czgsq9",
+        title:
+          "36 Scholarships and Opportunities for Professionals Across Various Sectors Closing in June – June 1,  2025",
+        description:
+          "Looking to grow your career, gain international exposure, or fund your next academic pursuit? We’ve curated 36 scholarships and professional opportunities across diverse sectors — all…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/02/36-scholarships-and-opportunities-for-professionals-across-various-sectors-closing-in-june-june-1-2025/",
+        location: "Multiple",
+        deadline: "1970-01-01T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:30:58.924Z",
+        updated_at: "2025-07-06T09:30:58.924Z",
+      },
+      {
+        id: "cmcrh2nm6000hq03q6gypv5no",
+        title: "South African Reserve Bank Art Scholarship 2026 (Fully-funded)",
+        description:
+          "Applications for the South African Reserve Bank Art Scholarship 2026 are now open. The South African Reserve Bank is offering an annual…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/02/south-african-reserve-bank-art-scholarship-2026/",
+        location: "South Africa",
+        deadline: "2025-09-30T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:31:02.286Z",
+        updated_at: "2025-07-06T09:31:02.286Z",
+      },
+      {
+        id: "cmcrh2qk6000jq03qopmbn5wx",
+        title:
+          "South African Reserve Bank (SARB) Masters in Data Science & Machine Learning Scholarship 2026",
+        description:
+          "Applications are open for the South African Reserve Bank (SARB) Masters in Data Science & Machine Learning Scholarship 2026. The SARB, as…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/05/30/sarb-masters-in-data-science-machine-learning-scholarship-2026/",
+        location: "South Africa",
+        deadline: "2025-10-31T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:31:06.101Z",
+        updated_at: "2025-07-06T09:31:06.101Z",
+      },
+      {
+        id: "cmcrh2syx000lq03q84quv29t",
+        title:
+          "International Coaching Federation (ICF) Foundation Scholarship 2026",
+        description:
+          "Are you passionate about becoming a professional coach and using your skills to create meaningful social impact in your community? Do you…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/05/30/icf-foundation-scholarship-2026/",
+        location: "Global",
+        deadline: "2025-06-30T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:31:09.225Z",
+        updated_at: "2025-07-06T09:31:09.225Z",
+      },
+      {
+        id: "cmcrh2vgg000nq03q1o7ml0u1",
+        title:
+          "Mastercard Foundation Scholars Program at Pan-Atlantic University 2025-2026 for Nigerians",
+        description:
+          "Applications are open for the Mastercard Foundation Scholars Program at Pan-Atlantic University 2025-2026. As the first Nigerian university to partner with the Mastercard Foundation…",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/05/27/mastercard-foundation-scholars-program-at-pan-atlantic-university-2025-2026/",
+        location: "Nigeria",
+        deadline: "1970-01-01T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T09:31:12.448Z",
+        updated_at: "2025-07-06T09:31:12.448Z",
+      },
+      {
+        id: "cmcrinqw20001q04s3haeyzfu",
+        title:
+          "African STARS MSc Fellowship 2025 for Researchers (Fully-funded)",
+        description:
+          "Applications are invited for the African STARS MSc Fellowship 2025. The Centre for Epidemic Response and Innovation (CERI) at Stellenbosch University (South…",
+        category_id: "cmcrfmyi50001q0xhdfy4y7u0",
+        source_url: "",
+        application_url:
+          "https://opportunitydesk.org/2025/06/11/african-stars-msc-fellowship-2025/",
+        location: "Stellenbosch University, South Africa",
+        deadline: "2025-06-26T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T10:15:25.922Z",
+        updated_at: "2025-07-06T10:15:25.922Z",
+      },
+      {
+        id: "cmcrjkt5j0001q0rgz8hrmh96",
+        title: "Fulbright South African Research Scholar Program 2026/2027",
+        description:
+          "The Fulbright South African Research Scholar Program 2026/2027 is open for applications. This is a fully funded opportunity for young South Africans to conduct research in the United States.",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://www.opportunitiesforafricans.com/fulbright-south-african-research-scholar-program-2026-2027/",
+        location: "United States",
+        deadline: null,
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T10:41:08.313Z",
+        updated_at: "2025-07-06T10:41:08.313Z",
+      },
+      {
+        id: "cmcrjktgs0003q0rgizav4444",
+        title: "Vodacom Bursary Programme 2026",
+        description:
+          "Applications are now open for the 2026 Vodacom Bursary Programme. This is an academic Merit Bursary open to fulltime first-year, second-year or third-year students intending to …",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://www.opportunitiesforafricans.com/vodacom-bursary-programme-2026/",
+        location: "South Africa",
+        deadline: "2025-08-31T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T10:41:08.314Z",
+        updated_at: "2025-07-06T10:41:08.314Z",
+      },
+      {
+        id: "cmcrjktmg0005q0rgzqt3dekh",
+        title: "One Young World Hauwa Ojeifo Scholarship 2025",
+        description:
+          "Applications are now open for the 2025 One Young World Hauwa Ojeifo Scholarship. The Hauwa Ojeifo Scholarship was created to empower young leaders who are …",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://www.opportunitiesforafricans.com/one-young-world-hauwa-ojeifo-scholarship-2025/",
+        location: "Munich, Germany",
+        deadline: "2025-06-29T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T10:41:08.314Z",
+        updated_at: "2025-07-06T10:41:08.314Z",
+      },
+      {
+        id: "cmcrjktrt0007q0rgr1lswue4",
+        title:
+          "South African National Roads Agency SOC Limited (SANRAL) Scholarship Programme 2025",
+        description:
+          "Applications are now open for the 2025 SANRAL Scholarship Programme. The South African National Roads Agency SOC Limited (SANRAL) is responsible for building and maintaining …",
+        category_id: "cmcrfmwte0000q0xh5hn7gz3l",
+        source_url: "",
+        application_url:
+          "https://www.opportunitiesforafricans.com/the-south-african-national-roads-agency-soc-limited-sanral-scholarship-programme-2025/",
+        location: "South Africa",
+        deadline: "2025-09-30T00:00:00.000Z",
+        is_approved: false,
+        created_by_id: null,
+        source_type: "AI",
+        created_at: "2025-07-06T10:41:08.314Z",
+        updated_at: "2025-07-06T10:41:08.314Z",
+      },
+    ],
+    meta: {
+      total: 211,
+      totalPages: 11,
+      currentPage: 1,
+      perPage: 20,
+    },
+  },
+};
+
 export default function Opportunities() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,27 +461,30 @@ export default function Opportunities() {
 
   // Update total pages when data loads
   useEffect(() => {
-    if (opportunitiesResponse?.data!.meta) {
-      setTotalPages(opportunitiesResponse.data.meta.totalPages);
+    if ((opportunitiesResponse || opps)?.data!.meta) {
+      setTotalPages((opportunitiesResponse || opps)?.data.meta.totalPages);
     }
   }, [opportunitiesResponse]);
 
   // Transform and normalize the data
   const opportunities: OpportunityWithCategory[] = useMemo(() => {
-    if (!opportunitiesResponse?.data.data || !categoriesData?.data) return [];
+    if (!(opportunitiesResponse || opps)?.data.data || !categoriesData?.data)
+      return [];
 
     const categoriesMap = new Map(
       categoriesData.data.map((cat: Category) => [cat.id, cat])
     );
 
-    return opportunitiesResponse.data.data.map((opp: Opportunity | any) => ({
-      ...opp,
-      category: categoriesMap.get(opp.category_id),
-      type: "Opportunity",
-      amount: "N/A",
-      tags: [],
-      featured: false,
-    }));
+    return (opportunitiesResponse || opps).data.data.map(
+      (opp: Opportunity | any) => ({
+        ...opp,
+        category: categoriesMap.get(opp.category_id),
+        type: "Opportunity",
+        amount: "N/A",
+        tags: [],
+        featured: false,
+      })
+    );
   }, [opportunitiesResponse, categoriesData]);
 
   const categories = categoriesData?.data || [];
@@ -298,7 +665,7 @@ export default function Opportunities() {
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1 || oppsLoading}
         >
-          <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+          <ChevronLeft className="h-4 w-4 mr-1" /> Prev
         </Button>
       </PaginationItem>
     );
@@ -411,9 +778,7 @@ export default function Opportunities() {
               </div>
               <h2 className="text-2xl font-bold mb-2">Failed to load data</h2>
               <p className="text-muted-foreground mb-6 max-w-md">
-                {oppsError.valueOf() ||
-                  categoriesError.valueOf() ||
-                  "Please try again later"}
+                {oppsError || categoriesError || "Please try again later"}
               </p>
               <div className="flex gap-3">
                 <Button onClick={() => refetchOpportunities()}>
@@ -493,9 +858,9 @@ export default function Opportunities() {
                     variant={viewMode === "list" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setViewMode("list")}
-                    className="rounded-l-none"
+                    className="rounded-l-none !dark:text-gray-300"
                   >
-                    <List className="h-4 w-4" />
+                    <List className="h-4 w-4 data-[]:" />
                   </Button>
                 </div>
               </div>
@@ -503,7 +868,7 @@ export default function Opportunities() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
           <div className="flex gap-8">
             {/* Sidebar */}
             <div
@@ -532,9 +897,9 @@ export default function Opportunities() {
 
               {/* Opportunity Cards */}
               {oppsLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {[...Array(currentPageMeta.perPage)].map((_, i) => (
-                    <Skeleton key={i} className="h-80 rounded-xl" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <Skeleton key={i} className="h-60 sm:h-80 rounded-xl" />
                   ))}
                 </div>
               ) : (
@@ -542,7 +907,7 @@ export default function Opportunities() {
                   <div
                     className={`${
                       viewMode === "grid"
-                        ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                        ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
                         : "space-y-4"
                     }`}
                   >
@@ -588,15 +953,40 @@ export default function Opportunities() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="mt-8 flex justify-center">
-                  <Pagination>
-                    <PaginationContent>{paginationItems}</PaginationContent>
-                  </Pagination>
+                <div className="mt-8">
+                  {/* Mobile pagination */}
+                  <div className="lg:hidden flex flex-col items-center gap-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1 || oppsLoading}
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" /> Prev
+                      </Button>
+                      <span className="text-sm text-muted-foreground px-3 py-1 border rounded-md">
+                        {currentPage} / {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages || oppsLoading}
+                      >
+                        Next <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </div>
+                  </div>
 
-                  <div className="ml-4 flex items-center text-sm text-muted-foreground">
-                    <span>
+                  {/* Desktop pagination */}
+                  <div className="hidden lg:flex justify-center items-center">
+                    <Pagination>
+                      <PaginationContent>{paginationItems}</PaginationContent>
+                    </Pagination>
+                    <div className="ml-4 text-sm text-muted-foreground">
                       Page {currentPage} of {totalPages}
-                    </span>
+                    </div>
                   </div>
                 </div>
               )}

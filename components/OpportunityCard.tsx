@@ -90,7 +90,7 @@ export const OpportunityCard = ({
 
   if (viewMode === "list") {
     return (
-      <Card className="hover:shadow-lg transition-all duration-300 group">
+      <Card className="hover:shadow-lg transition-all duration-300 group w-full">
         <div className="flex flex-col md:flex-row">
           <div className="flex-1 p-6">
             <div className="flex items-start justify-between mb-4">

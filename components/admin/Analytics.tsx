@@ -1,30 +1,29 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Download, 
-  TrendingUp, 
-  Users, 
-  MessageSquare, 
+import {
+  Download,
+  TrendingUp,
+  Users,
+  MessageSquare,
   Globe,
   Smartphone,
-  Monitor
+  Monitor,
 } from "lucide-react";
-import { 
-  BarChart, 
-  Bar, 
-  LineChart, 
-  Line, 
-  PieChart, 
-  Pie, 
-  Cell, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   Area,
-  AreaChart
+  AreaChart,
 } from "recharts";
 
 const engagementData = [
@@ -67,7 +66,9 @@ export function Analytics() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Analytics Dashboard
+        </h1>
         <div className="flex space-x-2">
           <Button variant="outline" className="flex items-center space-x-2">
             <Download className="w-4 h-4" />
@@ -84,29 +85,39 @@ export function Analytics() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Sessions
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">41,200</div>
-            <p className="text-xs text-muted-foreground">+22% from last month</p>
+            <p className="text-xs text-muted-foreground">
+              +22% from last month
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Session Duration</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Avg. Session Duration
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">4:38</div>
-            <p className="text-xs text-muted-foreground">+18s from last month</p>
+            <p className="text-xs text-muted-foreground">
+              +18s from last month
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Bot Interactions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Bot Interactions
+            </CardTitle>
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -141,7 +152,13 @@ export function Analytics() {
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
-                <Area type="monotone" dataKey="sessions" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
+                <Area
+                  type="monotone"
+                  dataKey="sessions"
+                  stroke="#3b82f6"
+                  fill="#3b82f6"
+                  fillOpacity={0.3}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -189,8 +206,16 @@ export function Analytics() {
                 <XAxis dataKey="day" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="interactions" fill="#3b82f6" name="Interactions" />
-                <Bar dataKey="recommendations" fill="#10b981" name="Recommendations" />
+                <Bar
+                  dataKey="interactions"
+                  fill="#3b82f6"
+                  name="Interactions"
+                />
+                <Bar
+                  dataKey="recommendations"
+                  fill="#10b981"
+                  name="Recommendations"
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -264,9 +289,12 @@ export function Analytics() {
         <CardContent>
           <div className="space-y-3">
             {topQuestions.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-gray-50 text-gray-500 rounded-lg"
+              >
                 <span className="text-sm font-medium">{item.question}</span>
-                <span className="text-sm text-gray-500">{item.count} times</span>
+                <span className="text-sm">{item.count} times</span>
               </div>
             ))}
           </div>
