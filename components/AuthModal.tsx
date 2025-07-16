@@ -17,44 +17,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { signInUser, signUpUser } from "@/lib/actions/auth";
 import { UserRole } from "@/enum";
+import { toast } from "sonner";
+import { useAuthStore, useCurrentUser } from "@/store/auth";
+import { AuthFormData, authSchema } from "@/types/user";
 
 // Zustand store for auth state
-interface AuthState {
-  user: {
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    educationLevel?: string;
-    experienceYears?: number;
-    interests?: string[];
-    isGuest: boolean;
-    role?: UserRole;
-  } | null;
-  setUser: (user: AuthState["user"]) => void;
-}
-
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  setUser: (user) => set({ user }),
-}));
-
-// Unified form validation schema
-const authSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  educationLevel: z.string().optional(),
-  experienceYears: z.coerce
-    .number()
-    .min(0, "Experience cannot be negative")
-    .max(50, "Experience seems too high")
-    .optional()
-    .or(z.literal("")),
-  interests: z.string().optional(),
-});
-
-type AuthFormData = z.infer<typeof authSchema>;
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -72,8 +39,8 @@ export const AuthModal = ({
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode") || "signin";
   const isSignUp = mode === "signup";
-
-  const { setUser } = useAuthStore();
+  const { login } = useAuthStore();
+  const user = useCurrentUser();
 
   const form = useForm<AuthFormData>({
     resolver: zodResolver(authSchema),
@@ -126,9 +93,11 @@ export const AuthModal = ({
         password,
       });
 
+      console.log({ response });
+
       if (response.success) {
         // Set user data in Zustand store
-        setUser({
+        login({
           email: response.data.user.email,
           firstName: response.data.user.first_name,
           lastName: response.data.user.last_name,
@@ -138,13 +107,13 @@ export const AuthModal = ({
           isGuest: false,
           role: response!.data.user.role, // Add role from response
         });
-
-        form.reset();
-        onClose();
-
+        toast.success("Logged in successfully!");
+        // onClose();
+        console.log({ user });
         // Redirect based on user role
-        if (response.data.user.role === UserRole.ADMIN) {
+        if (user?.role === UserRole.ADMIN) {
           router.push("/admin");
+          console.log("Pushed to admin");
         } else {
           router.push("/");
         }
@@ -154,11 +123,7 @@ export const AuthModal = ({
 
   const handleGuestContinue = () => {
     // Set guest user data
-    setUser({
-      email: "guest@example.com",
-      isGuest: true,
-      role: UserRole.USER,
-    });
+
     form.reset();
     onContinueAsGuest();
   };

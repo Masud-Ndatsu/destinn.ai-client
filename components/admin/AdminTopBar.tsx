@@ -1,3 +1,4 @@
+"use client";
 import { Bell, ChevronDown, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,8 +15,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ThemeToggle } from "../ui/theme-toggle";
+import { useCurrentUser } from "@/store/auth";
 
 export function AdminTopBar() {
+  const user = useCurrentUser();
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
       <div className="flex items-center space-x-4">
@@ -52,8 +55,12 @@ export function AdminTopBar() {
                 A
               </div>
               <div className="text-left">
-                <p className="text-sm font-medium text-gray-600">Admin User</p>
-                <p className="text-xs text-gray-500">Administrator</p>
+                <p className="text-sm font-medium text-gray-600">
+                  {user ? `${user?.firstName} ${user?.lastName}` : "Admin User"}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {user ? `${user.role}` : "Administrator"}
+                </p>
               </div>
               <ChevronDown className="w-4 h-4" />
             </Button>

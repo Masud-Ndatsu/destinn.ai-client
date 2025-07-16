@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, X, Send, Bot } from "lucide-react";
+import { useChatbotStore } from "@/store/chat";
 
 export const ChatbotWidget = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isChatbotOpen, closeChatbot, toggleChatbot } = useChatbotStore();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
     {
@@ -50,7 +51,7 @@ export const ChatbotWidget = () => {
   return (
     <div className="fixed bottom-6 right-6 z-50" data-chat-widget>
       {/* Chat Window */}
-      {isOpen && (
+      {isChatbotOpen && (
         <Card className="w-96 h-96 mb-4 shadow-2xl border-0 animate-scale-in">
           <CardHeader className="bg-gradient-to-r from-blue-600 to-[#3498db]/100 text-white">
             <div className="flex items-center justify-between">
@@ -66,7 +67,7 @@ export const ChatbotWidget = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsOpen(false)}
+                onClick={closeChatbot}
                 className="text-white hover:bg-white/20"
               >
                 <X className="h-4 w-4" />
@@ -122,10 +123,10 @@ export const ChatbotWidget = () => {
 
       {/* Floating Button */}
       <Button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleChatbot}
         className="w-16 h-16 bg-gradient-to-r from-blue-600 to-[#3498db]/100  shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
       >
-        {isOpen ? (
+        {isChatbotOpen ? (
           <X className="h-6 w-6 text-white" />
         ) : (
           <MessageCircle className="h-6 w-6 text-white" />

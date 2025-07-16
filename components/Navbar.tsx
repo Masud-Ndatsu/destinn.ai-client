@@ -2,20 +2,40 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { LayoutDashboard, Menu, X } from "lucide-react";
 import { CategoryDropdown } from "@/components/CategoryDropdown";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThemeToggle } from "./ui/theme-toggle";
-import useModalStore from "@/stores/modal";
+import useModalStore from "@/store/modal";
+import { AuthModal } from "./AuthModal";
+import { scrollToChat } from "@/lib/utils";
+import { useCurrentUser } from "@/store/auth";
+import { UserRole } from "@/enum";
+import { useChatbotStore } from "@/store/chat";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const setLoginModalOpen = useModalStore((state) => state.setLoginModalOpen);
+  const { isLoginModalOpen, setLoginModalOpen } = useModalStore();
+  const { openChatbot } = useChatbotStore();
   const pathname = usePathname();
+  const router = useRouter();
+  const user = useCurrentUser();
+
+  const handleContinueAsGuest = () => {
+    setLoginModalOpen(false);
+    if (pathname !== "/") {
+      router.push("/");
+      setTimeout(() => scrollToChat(), 100);
+    } else {
+      scrollToChat();
+    }
+  };
 
   const handleGetCareerAdvice = () => {
-    setLoginModalOpen(true);
+    if (user) {
+      openChatbot();
+    } else setLoginModalOpen(true);
   };
 
   const handleMenuItemClick = () => {
@@ -41,7 +61,7 @@ export const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-8">
+              <div className="ml-10 flex items-center space-x-8">
                 <Link
                   href="/"
                   className={`px-3 py-2 text-sm font-medium transition-colors ${
@@ -75,6 +95,14 @@ export const Navbar = () => {
                 >
                   Contact
                 </Link>
+                {user?.role === UserRole.ADMIN && (
+                  <Link
+                    href="/admin"
+                    className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
+                  >
+                    <LayoutDashboard />
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -149,7 +177,7 @@ export const Navbar = () => {
                   Contact
                 </Link>
                 <Button
-                  onClick={handleGetCareerAdvice}
+                  onClick={user ? scrollToChat : handleGetCareerAdvice}
                   className="w-full mt-4 bg-gradient-to-r from-blue-600 to-[#3498db]/100 text-white"
                 >
                   Get Career Advice
@@ -159,6 +187,13 @@ export const Navbar = () => {
           )}
         </div>
       </nav>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onContinueAsGuest={handleContinueAsGuest}
+      />
     </>
   );
 };
