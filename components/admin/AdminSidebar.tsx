@@ -60,17 +60,16 @@ export function AdminSidebar({
     >
       <SidebarHeader className="p-6 relative">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex-shrink-0"></div>
-          {!isCollapsed && (
-            <div className="overflow-hidden">
-              <Link href={"/"} className="text-lg font-bold whitespace-nowrap">
-                AmbifulAI
-              </Link>
-              {/* <p className="text-sm text-gray-500 whitespace-nowrap">
-                FuturePathFinder
-              </p> */}
-            </div>
-          )}
+          <Link href={"/"} className="flex item-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex-shrink-0"></div>
+            {!isCollapsed && (
+              <div className="overflow-hidden">
+                <h1 className="text-lg font-bold whitespace-nowrap">
+                  AmbifulAI
+                </h1>
+              </div>
+            )}
+          </Link>
         </div>
 
         {/* Toggle Button */}

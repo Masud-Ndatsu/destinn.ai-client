@@ -95,17 +95,19 @@ export const Navbar = () => {
                 >
                   Contact
                 </Link>
-                {user?.role === UserRole.ADMIN && (
-                  <Link
-                    href="/admin"
-                    className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
-                  >
-                    <LayoutDashboard />
-                  </Link>
-                )}
               </div>
             </div>
 
+            <div className="hidden md:block">
+              {user?.role === UserRole.ADMIN && (
+                <Link
+                  href="/admin"
+                  className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  <LayoutDashboard />
+                </Link>
+              )}
+            </div>
             <ThemeToggle />
 
             {/* CTA Button */}
