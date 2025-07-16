@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { scrollToChat } from "@/lib/utils";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 export const Hero = () => {
@@ -7,13 +8,6 @@ export const Hero = () => {
     const opportunities = document.getElementById("opportunities");
     if (opportunities) {
       opportunities.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const scrollToChat = () => {
-    const chatWidget = document.querySelector("[data-chat-widget]");
-    if (chatWidget) {
-      chatWidget.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -84,7 +78,7 @@ export const Hero = () => {
               </div>
             </div>
             <div className="text-center">
-              <div className="sm:text-3xl md:text-4xl font-bold text-accent">
+              <div className="sm:text-3xl md:text-4xl font-bold text-gray-400">
                 5K+
               </div>
               <div className="text-muted-foreground mt-2">Students Helped</div>

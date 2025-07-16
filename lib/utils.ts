@@ -77,3 +77,15 @@ export const scrollToChat = () => {
     chatWidget.scrollIntoView({ behavior: "smooth" });
   }
 };
+
+export function isTokenExpired(token?: string): boolean {
+  if (!token) return true;
+
+  try {
+    const decoded: { exp: number } = jwtDecode(token);
+    const now = Math.floor(Date.now() / 1000); // Current time in seconds
+    return decoded.exp < now;
+  } catch (e) {
+    return true; // If decode fails, treat token as expired
+  }
+}

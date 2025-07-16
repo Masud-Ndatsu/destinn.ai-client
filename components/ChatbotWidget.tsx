@@ -49,10 +49,17 @@ export const ChatbotWidget = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50" data-chat-widget>
+    <div
+      className="fixed 
+  bottom-18 right-6
+  left-1/2 transform -translate-x-1/2 md:left-auto md:transform-none
+  w-full max-w-md md:max-w-none md:w-auto 
+  px-4 md:px-0 z-[700]"
+      data-chat-widget
+    >
       {/* Chat Window */}
       {isChatbotOpen && (
-        <Card className="w-96 h-96 mb-4 shadow-2xl border-0 animate-scale-in">
+        <Card className="w-full md:w-96 h-96 mb-4 shadow-2xl border-0 animate-scale-in">
           <CardHeader className="bg-gradient-to-r from-blue-600 to-[#3498db]/100 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -75,7 +82,7 @@ export const ChatbotWidget = () => {
             </div>
           </CardHeader>
 
-          <CardContent className="flex flex-col h-full p-0">
+          <CardContent className="flex flex-col h-full p-0 bg-white">
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.map((msg) => (
@@ -122,16 +129,15 @@ export const ChatbotWidget = () => {
       )}
 
       {/* Floating Button */}
-      <Button
-        onClick={toggleChatbot}
-        className="w-16 h-16 bg-gradient-to-r from-blue-600 to-[#3498db]/100  shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
-      >
-        {isChatbotOpen ? (
-          <X className="h-6 w-6 text-white" />
-        ) : (
+
+      {!isChatbotOpen && (
+        <Button
+          onClick={toggleChatbot}
+          className="w-16 h-16 bg-gradient-to-r from-blue-600 to-[#3498db]/100  shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+        >
           <MessageCircle className="h-6 w-6 text-white" />
-        )}
-      </Button>
+        </Button>
+      )}
     </div>
   );
 };

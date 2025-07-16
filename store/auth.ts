@@ -69,5 +69,3 @@ export const useIsAuthenticated = () =>
   useAuthStore((state) => state.isAuthenticated);
 export const useIsAdmin = () =>
   useAuthStore((state) => state.user?.role === UserRole.ADMIN);
-// export const useHasHydrated = () =>
-//   useAuthStore((state) => state.persist.hasHydrated);

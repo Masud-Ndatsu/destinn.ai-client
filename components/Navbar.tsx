@@ -179,7 +179,7 @@ export const Navbar = () => {
                   Contact
                 </Link>
                 <Button
-                  onClick={user ? scrollToChat : handleGetCareerAdvice}
+                  onClick={handleGetCareerAdvice}
                   className="w-full mt-4 bg-gradient-to-r from-blue-600 to-[#3498db]/100 text-white"
                 >
                   Get Career Advice
