@@ -51,7 +51,7 @@ export const ChatbotWidget = () => {
   return (
     <div
       className="fixed 
-  bottom-18 right-6
+  bottom-16 right-6
   left-1/2 transform -translate-x-1/2 md:left-auto md:transform-none
   w-full max-w-md md:max-w-none md:w-auto 
   px-4 md:px-0 z-[700]"

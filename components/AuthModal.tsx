@@ -108,8 +108,7 @@ export const AuthModal = ({
           role: response!.data.user.role, // Add role from response
         });
         toast.success("Logged in successfully!");
-        // onClose();
-        console.log({ user });
+        onClose();
         // Redirect based on user role
         if (user?.role === UserRole.ADMIN) {
           router.push("/admin");
