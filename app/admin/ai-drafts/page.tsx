@@ -2,5 +2,9 @@
 import { ReviewAIDrafts } from "@/components/admin/ReviewAIDrafts";
 
 export default function AIDraftsPage() {
-  return <ReviewAIDrafts />;
+  return (
+    <div className="space-y-6">
+      <ReviewAIDrafts />
+    </div>
+  );
 }

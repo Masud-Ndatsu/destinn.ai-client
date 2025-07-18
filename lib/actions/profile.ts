@@ -5,7 +5,7 @@ import { UserRole } from "@/enum";
 function extractErrorMessage(error: any, defaultMessage: string): string {
   if (error?.response?.data) {
     const apiError = error.response.data;
-    
+
     // Handle different API error response formats
     if (apiError.message) {
       return apiError.message;
@@ -15,12 +15,12 @@ function extractErrorMessage(error: any, defaultMessage: string): string {
       return apiError.details;
     } else if (Array.isArray(apiError)) {
       // Handle validation errors array
-      return apiError.map(err => err.message || err).join(", ");
-    } else if (typeof apiError === 'string') {
+      return apiError.map((err) => err.message || err).join(", ");
+    } else if (typeof apiError === "string") {
       return apiError;
     }
   }
-  
+
   return defaultMessage;
 }
 
@@ -54,9 +54,9 @@ interface ProfileResponse {
 export async function getUserProfile(): Promise<ProfileResponse> {
   try {
     console.log("👤 Fetching user profile...");
-    
+
     const response = await http.get<ProfileResponse>("/auth/profile");
-    
+
     console.log("✅ Profile response received:", {
       success: response.data.success,
       message: response.data.message,
@@ -67,20 +67,23 @@ export async function getUserProfile(): Promise<ProfileResponse> {
         last_name: response.data.data?.last_name,
         education_level: response.data.data?.education_level,
         experience_years: response.data.data?.experience_years,
-        interests: response.data.data?.interests?.length || 0
-      }
+        interests: response.data.data?.interests?.length || 0,
+      },
     });
-    
+
     return response.data;
   } catch (error: any) {
     console.error("❌ Profile fetch failed:", {
       status: error?.response?.status,
       statusText: error?.response?.statusText,
       data: error?.response?.data,
-      message: error?.message
+      message: error?.message,
     });
-    
-    const message = extractErrorMessage(error, "Failed to fetch profile. Please try again.");
+
+    const message = extractErrorMessage(
+      error,
+      "Failed to fetch profile. Please try again."
+    );
     throw new Error(message);
   }
 }
@@ -95,11 +98,11 @@ export async function updateUserProfile(
       last_name: payload.last_name,
       education_level: payload.education_level,
       experience_years: payload.experience_years,
-      interests: payload.interests?.length || 0
+      interests: payload.interests?.length || 0,
     });
-    
+
     const response = await http.put<ProfileResponse>("/auth/profile", payload);
-    
+
     console.log("✅ Profile update response:", {
       success: response.data.success,
       message: response.data.message,
@@ -107,20 +110,23 @@ export async function updateUserProfile(
         id: response.data.data?.id,
         email: response.data.data?.email,
         first_name: response.data.data?.first_name,
-        last_name: response.data.data?.last_name
-      }
+        last_name: response.data.data?.last_name,
+      },
     });
-    
+
     return response.data;
   } catch (error: any) {
     console.error("❌ Profile update failed:", {
       status: error?.response?.status,
       statusText: error?.response?.statusText,
       data: error?.response?.data,
-      message: error?.message
+      message: error?.message,
     });
-    
-    const message = extractErrorMessage(error, "Failed to update profile. Please try again.");
+
+    const message = extractErrorMessage(
+      error,
+      "Failed to update profile. Please try again."
+    );
     throw new Error(message);
   }
 }
