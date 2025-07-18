@@ -1,17 +1,18 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Users, 
-  Briefcase, 
-  TrendingUp, 
+import {
+  Users,
+  Briefcase,
+  TrendingUp,
   FileText,
   Download,
   Eye,
   MousePointer,
-  Clock
+  Clock,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -19,7 +20,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+import { useAdminDashboard } from "@/lib/queries/useAdminDashboard";
+import { usePendingOpportunities } from "@/lib/queries/useAdminOpportunities";
+import {
+  useApproveOpportunity,
+  useRejectOpportunity,
+} from "@/lib/queries/useAdminOpportunities";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const visitData = [
   { name: "Mon", visits: 1200 },
@@ -32,7 +50,12 @@ const visitData = [
 ];
 
 const opportunityPerformance = [
-  { title: "Software Engineering Internship", views: 2400, ctr: "12.5%", time: "3:45" },
+  {
+    title: "Software Engineering Internship",
+    views: 2400,
+    ctr: "12.5%",
+    time: "3:45",
+  },
   { title: "Marketing Associate Role", views: 1800, ctr: "8.2%", time: "2:30" },
   { title: "Data Science Position", views: 3200, ctr: "15.1%", time: "4:20" },
   { title: "UX Designer Opening", views: 1500, ctr: "6.8%", time: "2:15" },
@@ -41,10 +64,48 @@ const opportunityPerformance = [
 const pendingDrafts = [
   { title: "Remote Frontend Developer", source: "TechCorp", status: "pending" },
   { title: "Product Manager - SaaS", source: "StartupHub", status: "pending" },
-  { title: "Digital Marketing Specialist", source: "AgencyPro", status: "pending" },
+  {
+    title: "Digital Marketing Specialist",
+    source: "AgencyPro",
+    status: "pending",
+  },
 ];
 
 export function DashboardOverview() {
+  const {
+    data: dashboardData,
+    isLoading: dashboardLoading,
+    error: dashboardError,
+  } = useAdminDashboard();
+  const {
+    data: pendingData,
+    isLoading: pendingLoading,
+    error: pendingError,
+  } = usePendingOpportunities({ perPage: 3 });
+  const approveOpportunity = useApproveOpportunity();
+  const rejectOpportunity = useRejectOpportunity();
+
+  const handleApprove = async (id: string) => {
+    await approveOpportunity.mutateAsync(id);
+  };
+
+  const handleReject = async (id: string) => {
+    await rejectOpportunity.mutateAsync(id);
+  };
+
+  if (dashboardError || pendingError) {
+    return (
+      <div className="space-y-6">
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load dashboard data. Please try refreshing the page.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -60,12 +121,25 @@ export function DashboardOverview() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Visits</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">24,589</div>
-            <p className="text-xs text-muted-foreground">+12% from last month</p>
+            {dashboardLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {dashboardData?.totalUsers?.toLocaleString() || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +{dashboardData?.recentUsers || 0} new this week
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -75,30 +149,72 @@ export function DashboardOverview() {
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">342</div>
-            <p className="text-xs text-muted-foreground">+8 new this week</p>
+            {dashboardLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {dashboardData?.totalOpportunities || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {dashboardData?.approvedOpportunities || 0} approved
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. CTR</CardTitle>
+            <CardTitle className="text-sm font-medium">Approval Rate</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">10.7%</div>
-            <p className="text-xs text-muted-foreground">+2.1% from last week</p>
+            {dashboardLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {dashboardData?.metrics?.opportunityApprovalRate?.toFixed(
+                    1
+                  ) || 0}
+                  %
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Opportunity approval rate
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Drafts</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Review
+            </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">Requires review</p>
+            {dashboardLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {dashboardData?.pendingOpportunities || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">Requires review</p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -117,7 +233,12 @@ export function DashboardOverview() {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="visits" stroke="#3b82f6" strokeWidth={2} />
+                <Line
+                  type="monotone"
+                  dataKey="visits"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -135,7 +256,9 @@ export function DashboardOverview() {
                   <TrendingUp className="w-8 h-8 text-blue-600" />
                 </div>
                 <p className="text-gray-600">Interactive map coming soon</p>
-                <p className="text-sm text-gray-400">United States: 45% | Canada: 22% | UK: 18%</p>
+                <p className="text-sm text-gray-400">
+                  United States: 45% | Canada: 22% | UK: 18%
+                </p>
               </div>
             </div>
           </CardContent>
@@ -154,9 +277,18 @@ export function DashboardOverview() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Title</TableHead>
-                  <TableHead><Eye className="w-4 h-4 inline mr-1" />Views</TableHead>
-                  <TableHead><MousePointer className="w-4 h-4 inline mr-1" />CTR</TableHead>
-                  <TableHead><Clock className="w-4 h-4 inline mr-1" />Time</TableHead>
+                  <TableHead>
+                    <Eye className="w-4 h-4 inline mr-1" />
+                    Views
+                  </TableHead>
+                  <TableHead>
+                    <MousePointer className="w-4 h-4 inline mr-1" />
+                    CTR
+                  </TableHead>
+                  <TableHead>
+                    <Clock className="w-4 h-4 inline mr-1" />
+                    Time
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -180,20 +312,71 @@ export function DashboardOverview() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {pendingDrafts.map((draft, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{draft.title}</p>
-                    <p className="text-sm text-gray-500">Source: {draft.source}</p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button size="sm" variant="outline">Review</Button>
-                  </div>
+              {pendingLoading ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <span className="ml-2">Loading pending drafts...</span>
                 </div>
-              ))}
-              <Button variant="link" className="w-full">
-                View All Pending Drafts →
-              </Button>
+              ) : pendingData?.data?.length ? (
+                <>
+                  {pendingData.data.map((opportunity) => (
+                    <div
+                      key={opportunity.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div>
+                        <p className="font-medium">{opportunity.title}</p>
+                        <p className="text-sm text-gray-500">
+                          Source:{" "}
+                          {opportunity.created_by?.first_name ||
+                            opportunity.created_by?.email ||
+                            "AI Generated"}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {opportunity.location} •{" "}
+                          {new Date(
+                            opportunity.created_at
+                          ).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleApprove(opportunity.id)}
+                          disabled={approveOpportunity.isPending}
+                        >
+                          {approveOpportunity.isPending ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            "Approve"
+                          )}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleReject(opportunity.id)}
+                          disabled={rejectOpportunity.isPending}
+                        >
+                          {rejectOpportunity.isPending ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            "Reject"
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  <Button variant="link" className="w-full">
+                    View All Pending Drafts →
+                  </Button>
+                </>
+              ) : (
+                <div className="flex items-center justify-center p-8 text-gray-500">
+                  <FileText className="w-8 h-8 mr-2" />
+                  <span>No pending drafts</span>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

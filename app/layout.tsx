@@ -4,6 +4,8 @@ import "./globals.css";
 import QueryProvider from "./query-provider";
 import { Providers } from "./theme-provider";
 import { Suspense } from "react";
+import { ToastContainer } from "react-toastify";
+import { ChatbotWidget } from "@/components/ChatbotWidget";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,6 +28,12 @@ export default function RootLayout({
           <QueryProvider>
             <Suspense fallback={<div className="p-4">Loading...</div>}>
               {children}
+              <ChatbotWidget />
+              <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+              />
             </Suspense>
           </QueryProvider>
         </Providers>

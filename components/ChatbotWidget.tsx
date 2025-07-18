@@ -49,17 +49,10 @@ export const ChatbotWidget = () => {
   };
 
   return (
-    <div
-      className="fixed 
-  bottom-16 right-6
-  left-1/2 transform -translate-x-1/2 md:left-auto md:transform-none
-  w-full max-w-md md:max-w-none md:w-auto 
-  px-4 md:px-0 z-[700]"
-      data-chat-widget
-    >
+    <div className="fixed bottom-4 right-4 z-[1000]" data-chat-widget>
       {/* Chat Window */}
       {isChatbotOpen && (
-        <Card className="w-full md:w-96 h-96 mb-4 shadow-2xl border-0 animate-scale-in">
+        <Card className="w-96 mb-4 shadow-2xl border-0 animate-scale-in max-w-[calc(100vw-2rem)] max-h-[calc(100vh-8rem)] flex flex-col">
           <CardHeader className="bg-gradient-to-r from-blue-600 to-[#3498db]/100 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -82,9 +75,9 @@ export const ChatbotWidget = () => {
             </div>
           </CardHeader>
 
-          <CardContent className="flex flex-col h-full p-0">
+          <CardContent className="flex flex-col flex-1 p-0 min-h-0">
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white min-h-0">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -112,7 +105,7 @@ export const ChatbotWidget = () => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Ask about opportunities..."
-                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                   className="flex-1"
                 />
                 <Button
@@ -133,7 +126,7 @@ export const ChatbotWidget = () => {
       {!isChatbotOpen && (
         <Button
           onClick={toggleChatbot}
-          className="w-16 h-16 bg-gradient-to-r from-blue-600 to-[#3498db]/100  shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+          className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-[#3498db]/100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
         >
           <MessageCircle className="h-6 w-6 text-white" />
         </Button>

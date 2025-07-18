@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,62 +18,104 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, MoreHorizontal, Mail, UserCheck, UserX } from "lucide-react";
+import {
+  Search,
+  Filter,
+  MoreHorizontal,
+  Mail,
+  UserCheck,
+  UserX,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-const users = [
-  {
-    id: 1,
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    status: "Active",
-    country: "United States",
-    signupDate: "2024-01-15",
-    lastActive: "2024-01-20",
-    interests: ["Technology", "Software Engineering"],
-    savedOpportunities: 12,
-  },
-  {
-    id: 2,
-    name: "Bob Smith",
-    email: "bob@example.com",
-    status: "Inactive",
-    country: "Canada",
-    signupDate: "2024-01-10",
-    lastActive: "2024-01-18",
-    interests: ["Marketing", "Business"],
-    savedOpportunities: 8,
-  },
-  {
-    id: 3,
-    name: "Carol Davis",
-    email: "carol@example.com",
-    status: "Active",
-    country: "United Kingdom",
-    signupDate: "2024-01-12",
-    lastActive: "2024-01-21",
-    interests: ["Design", "UX/UI"],
-    savedOpportunities: 15,
-  },
-];
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  useAdminUsers,
+  useUserAnalytics,
+  useUpdateUserRole,
+  useDeactivateUser,
+  useActivateUser,
+} from "@/lib/queries/useAdminUsers";
+import { UserRole } from "@/enum";
 
 export function UserManagement() {
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 10;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Active":
+  const {
+    data: usersData,
+    isLoading: usersLoading,
+    error: usersError,
+  } = useAdminUsers({
+    page: currentPage,
+    perPage,
+    search: searchTerm || undefined,
+  });
+  const { data: analyticsData, isLoading: analyticsLoading } =
+    useUserAnalytics();
+  const updateUserRole = useUpdateUserRole();
+  const deactivateUser = useDeactivateUser();
+  const activateUser = useActivateUser();
+
+  const handleRoleChange = async (userId: string, newRole: UserRole) => {
+    try {
+      await updateUserRole.mutateAsync({
+        id: userId,
+        payload: { role: newRole },
+      });
+    } catch (error) {
+      console.error("Failed to update user role:", error);
+    }
+  };
+
+  const handleDeactivate = async (userId: string) => {
+    try {
+      await deactivateUser.mutateAsync(userId);
+    } catch (error) {
+      console.error("Failed to deactivate user:", error);
+    }
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  if (usersError) {
+    return (
+      <div className="space-y-6">
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load user data. Please try refreshing the page.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  const getRoleColor = (role: UserRole) => {
+    switch (role) {
+      case UserRole.ADMIN:
+        return "bg-red-100 text-red-800";
+      case UserRole.MODERATOR:
+        return "bg-yellow-100 text-yellow-800";
+      case UserRole.USER:
         return "bg-green-100 text-green-800";
-      case "Inactive":
-        return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
   };
 
   return (
@@ -95,8 +136,21 @@ export function UserManagement() {
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2,847</div>
-            <p className="text-xs text-muted-foreground">+156 this month</p>
+            {analyticsLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {analyticsData?.totalUsers?.toLocaleString() || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +{analyticsData?.recentSignups || 0} this month
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -105,28 +159,75 @@ export function UserManagement() {
             <CardTitle className="text-sm font-medium">Active Users</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2,145</div>
-            <p className="text-xs text-muted-foreground">75% of total</p>
+            {analyticsLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {analyticsData?.activeUsers?.toLocaleString() || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {analyticsData?.totalUsers
+                    ? Math.round(
+                        (analyticsData.activeUsers / analyticsData.totalUsers) *
+                          100
+                      )
+                    : 0}
+                  % of total
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">New This Week</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              New This Month
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">89</div>
-            <p className="text-xs text-muted-foreground">+12% from last week</p>
+            {analyticsLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {analyticsData?.recentSignups || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +{analyticsData?.growthRate || 0}% growth
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Engagement</CardTitle>
+            <CardTitle className="text-sm font-medium">User Roles</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">68%</div>
-            <p className="text-xs text-muted-foreground">Daily active rate</p>
+            {analyticsLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {analyticsData?.usersByRole?.length || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Role distribution
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -138,7 +239,12 @@ export function UserManagement() {
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input placeholder="Search users..." className="pl-9" />
+                <Input
+                  placeholder="Search users..."
+                  className="pl-9"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                />
               </div>
             </div>
             <Select defaultValue="all-status">
@@ -181,60 +287,141 @@ export function UserManagement() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Country</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Education</TableHead>
                 <TableHead>Signup Date</TableHead>
-                <TableHead>Last Active</TableHead>
-                <TableHead>Saved Opportunities</TableHead>
+                <TableHead>Last Updated</TableHead>
+                <TableHead>Interests</TableHead>
                 <TableHead className="w-12">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(user.status)}>
-                      {user.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{user.country}</TableCell>
-                  <TableCell>{user.signupDate}</TableCell>
-                  <TableCell>{user.lastActive}</TableCell>
-                  <TableCell>{user.savedOpportunities}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <UserCheck className="w-4 h-4 mr-2" />
-                          View Profile
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Mail className="w-4 h-4 mr-2" />
-                          Send Message
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          Reset Password
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                          <UserX className="w-4 h-4 mr-2" />
-                          Deactivate
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+              {usersLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    <div className="flex items-center justify-center space-x-2">
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <span>Loading users...</span>
+                    </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (usersData as any)?.users?.length ? (
+                (usersData as any).users.map((user: any) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">
+                      {user.first_name || user.last_name
+                        ? `${user.first_name || ""} ${
+                            user.last_name || ""
+                          }`.trim()
+                        : user.email.split("@")[0]}
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge className={getRoleColor(user.role)}>
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{user.education_level || "N/A"}</TableCell>
+                    <TableCell>{formatDate(user.created_at)}</TableCell>
+                    <TableCell>{formatDate(user.updated_at)}</TableCell>
+                    <TableCell>{user.interests?.length || 0}</TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>
+                            <UserCheck className="w-4 h-4 mr-2" />
+                            View Profile
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Mail className="w-4 h-4 mr-2" />
+                            Send Message
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleRoleChange(user.id, UserRole.MODERATOR)
+                            }
+                            disabled={updateUserRole.isPending}
+                          >
+                            Make Moderator
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleRoleChange(user.id, UserRole.ADMIN)
+                            }
+                            disabled={updateUserRole.isPending}
+                          >
+                            Make Admin
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={() => handleDeactivate(user.id)}
+                            disabled={deactivateUser.isPending}
+                          >
+                            <UserX className="w-4 h-4 mr-2" />
+                            Deactivate
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    className="text-center py-8 text-gray-500"
+                  >
+                    No users found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      {/* Pagination */}
+      {usersData &&
+        usersData.pagination &&
+        usersData.pagination.totalPages > 1 && (
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              Showing {(currentPage - 1) * perPage + 1} to{" "}
+              {Math.min(currentPage * perPage, usersData.pagination.total)} of{" "}
+              {usersData.pagination.total} users
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-gray-500">
+                Page {currentPage} of {usersData.pagination.totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.min(usersData.pagination.totalPages, prev + 1)
+                  )
+                }
+                disabled={currentPage === usersData.pagination.totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
 
       {/* User Interests Overview */}
       <Card>

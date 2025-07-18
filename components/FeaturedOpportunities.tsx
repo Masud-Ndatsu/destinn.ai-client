@@ -17,65 +17,67 @@ import {
   GraduationCap,
   Briefcase,
   Award,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { useOpportunities } from "@/lib/queries/useOpportunities";
 
-const opportunities = [
-  {
-    id: 1,
-    title: "Google Summer of Code 2024",
-    type: "Internship",
-    category: "Technology",
-    deadline: "March 15, 2024",
-    location: "Remote",
-    amount: "$6,000",
-    icon: Briefcase,
-    description:
-      "Contribute to open source projects while getting mentored by industry experts.",
-    tags: ["Programming", "Open Source", "Mentorship"],
-  },
-  {
-    id: 2,
-    title: "Rhodes Scholarship",
-    type: "Scholarship",
-    category: "Education",
-    deadline: "October 1, 2024",
-    location: "Oxford, UK",
-    amount: "Full Funding",
-    icon: GraduationCap,
-    description:
-      "Prestigious scholarship for outstanding students to study at the University of Oxford.",
-    tags: ["Graduate Study", "Leadership", "International"],
-  },
-  {
-    id: 3,
-    title: "NASA Space Grant",
-    type: "Grant",
-    category: "STEM",
-    deadline: "February 28, 2024",
-    location: "USA",
-    amount: "$15,000",
-    icon: Award,
-    description:
-      "Support for students pursuing space-related research and career paths.",
-    tags: ["Space", "Research", "STEM"],
-  },
-  {
-    id: 4,
-    title: "Y Combinator Startup School",
-    type: "Program",
-    category: "Entrepreneurship",
-    deadline: "Rolling",
-    location: "Remote",
-    amount: "Free",
-    icon: Briefcase,
-    description:
-      "Free online course for entrepreneurs looking to start a company.",
-    tags: ["Startup", "Business", "Entrepreneurship"],
-  },
-];
+// Helper function to get icon based on category or type
+const getOpportunityIcon = (category: string) => {
+  switch (category?.toLowerCase()) {
+    case "technology":
+    case "tech":
+    case "programming":
+      return Briefcase;
+    case "education":
+    case "scholarship":
+      return GraduationCap;
+    case "stem":
+    case "science":
+    case "research":
+      return Award;
+    case "entrepreneurship":
+    case "business":
+      return Briefcase;
+    default:
+      return Briefcase;
+  }
+};
+
+// Helper function to format deadline
+const formatDeadline = (deadline: string) => {
+  try {
+    const date = new Date(deadline);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  } catch {
+    return deadline;
+  }
+};
+
 
 export const FeaturedOpportunities = () => {
+  const {
+    data: opportunitiesResponse,
+    isLoading,
+    error,
+    isError,
+  } = useOpportunities();
+
+  console.log("🎯 FeaturedOpportunities data:", {
+    isLoading,
+    error,
+    hasData: !!opportunitiesResponse,
+    dataLength: opportunitiesResponse?.data?.data?.length,
+  });
+
+  // Get featured opportunities (first 4 from the API)
+  const featuredOpportunities = opportunitiesResponse?.data?.data?.slice(0, 4) || [];
+
   return (
     <section id="opportunities" className="py-24 bg-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,82 +91,132 @@ export const FeaturedOpportunities = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-          {opportunities.map((opportunity, index) => {
-            const IconComponent = opportunity.icon;
-            return (
-              <Card
-                key={opportunity.id}
-                className="group hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 shadow-lg animate-fade-in"
-                style={{ animationDelay: `${index * 150}ms` }}
+        {/* Error State */}
+        {isError && (
+          <div className="text-center py-12">
+            <div className="max-w-md mx-auto bg-red-50 border border-red-200 rounded-lg p-6">
+              <AlertCircle className="h-8 w-8 text-red-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-red-800 mb-2">Unable to Load Opportunities</h3>
+              <p className="text-red-600 mb-4">
+                {error?.message || "Failed to load opportunities. Please try again later."}
+              </p>
+              <Button
+                onClick={() => window.location.reload()}
+                variant="outline"
+                className="border-red-200 text-red-600 hover:bg-red-50"
               >
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg">
-                        <IconComponent className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <Badge
-                        variant="secondary"
-                        className="bg-blue-50 text-blue-700"
-                      >
-                        {opportunity.type}
-                      </Badge>
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl font-bold text-card-foreground group-hover:text-blue-600 transition-colors">
-                    {opportunity.title}
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    {opportunity.description}
-                  </CardDescription>
-                </CardHeader>
+                <Loader2 className="h-4 w-4 mr-2" />
+                Retry
+              </Button>
+            </div>
+          </div>
+        )}
 
-                <CardContent className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    {opportunity.tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
+        {/* Success State */}
+        {!isError && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+              {featuredOpportunities.length > 0 ? (
+                featuredOpportunities.map((opportunity, index) => {
+                  const IconComponent = getOpportunityIcon(opportunity.category_id);
+                  return (
+                    <Card
+                      key={opportunity.id}
+                      className="group hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 shadow-lg animate-fade-in"
+                      style={{ animationDelay: `${index * 150}ms` }}
+                    >
+                      <CardHeader className="pb-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg">
+                              <IconComponent className="h-6 w-6 text-blue-600" />
+                            </div>
+                            <Badge
+                              variant="secondary"
+                              className="bg-blue-50 text-blue-700"
+                            >
+                              {opportunity.source_type || "Opportunity"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <CardTitle className="text-xl font-bold text-card-foreground group-hover:text-blue-600 transition-colors">
+                          {opportunity.title}
+                        </CardTitle>
+                        <CardDescription className="text-muted-foreground">
+                          {opportunity.description || "No description available"}
+                        </CardDescription>
+                      </CardHeader>
 
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center dark:text-gray-300">
-                      <Calendar className="h-4 w-4 mr-2 text-muted-foreground " />
-                      Deadline: {opportunity.deadline}
-                    </div>
-                    <div className="flex items-center dark:text-gray-300">
-                      <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {opportunity.location}
-                    </div>
-                    <div className="flex items-center dark:text-gray-300">
-                      <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {opportunity.amount}
-                    </div>
-                  </div>
-                </CardContent>
+                      <CardContent className="space-y-4">
+                        <div className="flex flex-wrap gap-2">
+                          {opportunity.company && (
+                            <Badge variant="outline" className="text-xs">
+                              {opportunity.company}
+                            </Badge>
+                          )}
+                          {opportunity.category_id && (
+                            <Badge variant="outline" className="text-xs">
+                              Category: {opportunity.category_id}
+                            </Badge>
+                          )}
+                        </div>
 
-                <CardFooter>
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-[#3498db]/100 hover:from-blue-700 hover:to-[#3498db]/700 text-white">
-                    Learn More
-                  </Button>
-                </CardFooter>
-              </Card>
-            );
-          })}
-        </div>
+                        <div className="space-y-2 text-sm text-muted-foreground">
+                          <div className="flex items-center dark:text-gray-300">
+                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                            Deadline: {formatDeadline(opportunity.deadline)}
+                          </div>
+                          <div className="flex items-center dark:text-gray-300">
+                            <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {opportunity.location}
+                          </div>
+                          {opportunity.application_url && (
+                            <div className="flex items-center dark:text-gray-300">
+                              <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
+                              Apply Online
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
 
-        <div className="text-center mt-12">
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300"
-            asChild
-          >
-            <Link href="/opportunities">View All Opportunities</Link>
-          </Button>
-        </div>
+                      <CardFooter>
+                        <Button
+                          className="w-full bg-gradient-to-r from-blue-600 to-[#3498db]/100 hover:from-blue-700 hover:to-[#3498db]/700 text-white"
+                          asChild
+                        >
+                          <Link
+                            href={opportunity.application_url || opportunity.source_url || "/opportunities"}
+                            target={opportunity.application_url || opportunity.source_url ? "_blank" : "_self"}
+                            rel={opportunity.application_url || opportunity.source_url ? "noopener noreferrer" : ""}
+                          >
+                            Learn More
+                          </Link>
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  );
+                })
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-muted-foreground">
+                    No opportunities available at the moment. Check back later!
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="text-center mt-12">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300"
+                asChild
+              >
+                <Link href="/opportunities">View All Opportunities</Link>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

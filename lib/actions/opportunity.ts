@@ -60,7 +60,10 @@ export async function createOpportunity(
     );
     return response.data;
   } catch (error) {
-    console.error("Error creating opportunity:", error);
+    // Only log on client side if console is available
+    if (typeof window !== "undefined" && typeof console !== "undefined" && console.error) {
+      console.error("Error creating opportunity:", error);
+    }
     throw error;
   }
 }
@@ -78,10 +81,13 @@ export async function getOpportunitiesByCategoryId(
     );
     return response.data;
   } catch (error) {
-    console.error(
-      `Error fetching opportunities for category ${categoryId}:`,
-      error
-    );
+    // Only log on client side if console is available
+    if (typeof window !== "undefined" && typeof console !== "undefined" && console.error) {
+      console.error(
+        `Error fetching opportunities for category ${categoryId}:`,
+        error
+      );
+    }
     throw error;
   }
 }
@@ -105,10 +111,16 @@ export async function getOpportunities(
     const response = await http.get<
       ApiResponse<PaginatedResponse<Opportunity>>
     >(`/opportunities?${params.toString()}`);
-    console.log({ response });
+    // Only log on client side if console is available
+    if (typeof window !== "undefined" && typeof console !== "undefined" && console.log) {
+      console.log({ response });
+    }
     return response.data;
   } catch (error) {
-    console.error("Error fetching opportunities:", error);
+    // Only log on client side if console is available
+    if (typeof window !== "undefined" && typeof console !== "undefined" && console.error) {
+      console.error("Error fetching opportunities:", error);
+    }
     throw error;
   }
 }
@@ -123,7 +135,10 @@ export async function getOpportunityById(
     );
     return response.data;
   } catch (error) {
-    console.error(`Error fetching opportunity ${id}:`, error);
+    // Only log on client side if console is available
+    if (typeof window !== "undefined" && typeof console !== "undefined" && console.error) {
+      console.error(`Error fetching opportunity ${id}:`, error);
+    }
     throw error;
   }
 }

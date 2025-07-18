@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Briefcase,
@@ -27,29 +27,34 @@ import {
 import Link from "next/link";
 
 interface AdminSidebarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
   isCollapsed: boolean;
   onToggle: (collapsed: boolean) => void;
 }
 
 const menuItems = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "opportunities", label: "Opportunities", icon: Briefcase },
-  { id: "ai-drafts", label: "AI Drafts", icon: Bot },
-  { id: "users", label: "Users", icon: Users },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
-  { id: "settings", label: "Settings", icon: Settings },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
+  { id: "opportunities", label: "Opportunities", icon: Briefcase, href: "/admin/opportunities" },
+  { id: "ai-drafts", label: "AI Drafts", icon: Bot, href: "/admin/ai-drafts" },
+  { id: "users", label: "Users", icon: Users, href: "/admin/users" },
+  { id: "analytics", label: "Analytics", icon: BarChart3, href: "/admin/analytics" },
+  { id: "settings", label: "Settings", icon: Settings, href: "/admin/settings" },
 ];
 
 export function AdminSidebar({
-  activeTab,
-  setActiveTab,
   isCollapsed,
   onToggle,
 }: AdminSidebarProps) {
+  const pathname = usePathname();
+  
   const toggleSidebar = () => {
     onToggle(!isCollapsed);
+  };
+
+  const isActive = (href: string) => {
+    if (href === "/admin/dashboard") {
+      return pathname === "/admin" || pathname === "/admin/dashboard";
+    }
+    return pathname === href;
   };
 
   return (
@@ -91,38 +96,39 @@ export function AdminSidebar({
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full ${
-                      isCollapsed ? "justify-center px-2" : "justify-start"
-                    } ${
-                      activeTab === item.id
-                        ? "bg-blue-50 text-blue-600 border-r-2 border-blue-600"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                    title={isCollapsed ? item.label : undefined}
-                  >
-                    <item.icon
-                      className={`w-4 h-4 ${
-                        isCollapsed ? "" : "mr-3"
-                      } flex-shrink-0`}
-                    />
-                    {!isCollapsed && (
-                      <>
-                        <span className="overflow-hidden whitespace-nowrap">
-                          {item.label}
-                        </span>
-                        {item.id === "ai-drafts" && (
-                          <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full flex-shrink-0">
-                            5
+                  <Link href={item.href}>
+                    <SidebarMenuButton
+                      className={`w-full ${
+                        isCollapsed ? "justify-center px-2" : "justify-start"
+                      } ${
+                        isActive(item.href)
+                          ? "bg-blue-50 text-blue-600 border-r-2 border-blue-600"
+                          : "text-gray-600 hover:bg-gray-50"
+                      }`}
+                      title={isCollapsed ? item.label : undefined}
+                    >
+                      <item.icon
+                        className={`w-4 h-4 ${
+                          isCollapsed ? "" : "mr-3"
+                        } flex-shrink-0`}
+                      />
+                      {!isCollapsed && (
+                        <>
+                          <span className="overflow-hidden whitespace-nowrap">
+                            {item.label}
                           </span>
-                        )}
-                      </>
-                    )}
-                    {isCollapsed && item.id === "ai-drafts" && (
-                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
-                    )}
-                  </SidebarMenuButton>
+                          {item.id === "ai-drafts" && (
+                            <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full flex-shrink-0">
+                              5
+                            </span>
+                          )}
+                        </>
+                      )}
+                      {isCollapsed && item.id === "ai-drafts" && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+                      )}
+                    </SidebarMenuButton>
+                  </Link>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

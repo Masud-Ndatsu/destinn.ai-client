@@ -1,75 +1,21 @@
 "use client";
-import { useState } from "react";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { AdminTopBar } from "@/components/admin/AdminTopBar";
-import { DashboardOverview } from "@/components/admin/DashboardOverview";
-import { ManageOpportunities } from "@/components/admin/ManageOpportunities";
-import { ReviewAIDrafts } from "@/components/admin/ReviewAIDrafts";
-import { Analytics } from "@/components/admin/Analytics";
-import { UserManagement } from "@/components/admin/UserManagement";
-import { SystemSettings } from "@/components/admin/SystemSettings";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+export default function AdminPage() {
+  const router = useRouter();
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "dashboard":
-        return <DashboardOverview />;
-      case "opportunities":
-        return <ManageOpportunities />;
-      case "ai-drafts":
-        return <ReviewAIDrafts />;
-      case "analytics":
-        return <Analytics />;
-      case "users":
-        return <UserManagement />;
-      case "settings":
-        return <SystemSettings />;
-      default:
-        return <DashboardOverview />;
-    }
-  };
+  useEffect(() => {
+    // Redirect to dashboard by default
+    router.replace("/admin/dashboard");
+  }, [router]);
 
   return (
-    <SidebarProvider>
-      <div
-        className="min-h-screen w-full bg-gray-50"
-        style={{
-          display: "grid",
-          gridTemplateAreas: `
-            "sidebar topbar"
-            "sidebar content"
-          `,
-          gridTemplateColumns: `${sidebarCollapsed ? "4rem" : "16rem"} 1fr`,
-          gridTemplateRows: "auto 1fr",
-          transition: "grid-template-columns 0.3s ease",
-        }}
-      >
-        <div style={{ gridArea: "sidebar" }}>
-          <AdminSidebar
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            isCollapsed={sidebarCollapsed}
-            onToggle={setSidebarCollapsed}
-          />
-        </div>
-
-        <div style={{ gridArea: "topbar" }}>
-          <AdminTopBar />
-        </div>
-
-        <main
-          className={`p-6 transition-all duration-300 ${
-            sidebarCollapsed ? "max-w-full" : "max-w-[calc(100vw-16rem)]"
-          }`}
-          style={{ gridArea: "content" }}
-        >
-          {renderContent()}
-        </main>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Redirecting to dashboard...</p>
       </div>
-    </SidebarProvider>
+    </div>
   );
 }

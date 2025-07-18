@@ -65,9 +65,13 @@ export function scheduleAutoLogout(token: string, onLogout: () => void) {
   if (timeLeft <= 0) {
     onLogout();
   } else {
+    // Schedule logout 5 minutes before token expires
+    const bufferTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+    const logoutTime = Math.max(0, timeLeft - bufferTime);
+    
     setTimeout(() => {
       onLogout();
-    }, timeLeft);
+    }, logoutTime);
   }
 }
 
