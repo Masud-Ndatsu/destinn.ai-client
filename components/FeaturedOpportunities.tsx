@@ -21,7 +21,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useOpportunities } from "@/lib/queries/useOpportunities";
+import { useFeaturedOpportunities } from "@/lib/queries/useOpportunities";
 
 // Helper function to get icon based on category or type
 const getOpportunityIcon = (category: string) => {
@@ -59,24 +59,23 @@ const formatDeadline = (deadline: string) => {
   }
 };
 
-
 export const FeaturedOpportunities = () => {
   const {
-    data: opportunitiesResponse,
+    data: featuredResponse,
     isLoading,
     error,
     isError,
-  } = useOpportunities();
+  } = useFeaturedOpportunities();
 
   console.log("🎯 FeaturedOpportunities data:", {
     isLoading,
     error,
-    hasData: !!opportunitiesResponse,
-    dataLength: opportunitiesResponse?.data?.data?.length,
+    hasData: !!featuredResponse,
+    dataLength: featuredResponse?.data?.length,
   });
 
-  // Get featured opportunities (first 4 from the API)
-  const featuredOpportunities = opportunitiesResponse?.data?.data?.slice(0, 4) || [];
+  // Get featured opportunities from the dedicated endpoint
+  const featuredOpportunities = featuredResponse?.data || [];
 
   return (
     <section id="opportunities" className="py-24 bg-secondary">
@@ -96,9 +95,12 @@ export const FeaturedOpportunities = () => {
           <div className="text-center py-12">
             <div className="max-w-md mx-auto bg-red-50 border border-red-200 rounded-lg p-6">
               <AlertCircle className="h-8 w-8 text-red-600 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-red-800 mb-2">Unable to Load Opportunities</h3>
+              <h3 className="text-lg font-semibold text-red-800 mb-2">
+                Unable to Load Opportunities
+              </h3>
               <p className="text-red-600 mb-4">
-                {error?.message || "Failed to load opportunities. Please try again later."}
+                {error?.message ||
+                  "Failed to load opportunities. Please try again later."}
               </p>
               <Button
                 onClick={() => window.location.reload()}
@@ -117,8 +119,10 @@ export const FeaturedOpportunities = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
               {featuredOpportunities.length > 0 ? (
-                featuredOpportunities.map((opportunity, index) => {
-                  const IconComponent = getOpportunityIcon(opportunity.category_id);
+                featuredOpportunities.map((opportunity: any, index) => {
+                  const IconComponent = getOpportunityIcon(
+                    opportunity.category?.name || opportunity.category_id
+                  );
                   return (
                     <Card
                       key={opportunity.id}
@@ -126,24 +130,12 @@ export const FeaturedOpportunities = () => {
                       style={{ animationDelay: `${index * 150}ms` }}
                     >
                       <CardHeader className="pb-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg">
-                              <IconComponent className="h-6 w-6 text-blue-600" />
-                            </div>
-                            <Badge
-                              variant="secondary"
-                              className="bg-blue-50 text-blue-700"
-                            >
-                              {opportunity.source_type || "Opportunity"}
-                            </Badge>
-                          </div>
-                        </div>
                         <CardTitle className="text-xl font-bold text-card-foreground group-hover:text-blue-600 transition-colors">
                           {opportunity.title}
                         </CardTitle>
                         <CardDescription className="text-muted-foreground">
-                          {opportunity.description || "No description available"}
+                          {opportunity.description ||
+                            "No description available"}
                         </CardDescription>
                       </CardHeader>
 
@@ -154,9 +146,9 @@ export const FeaturedOpportunities = () => {
                               {opportunity.company}
                             </Badge>
                           )}
-                          {opportunity.category_id && (
+                          {opportunity.category && (
                             <Badge variant="outline" className="text-xs">
-                              Category: {opportunity.category_id}
+                              {opportunity.category.name}
                             </Badge>
                           )}
                         </div>
@@ -185,9 +177,23 @@ export const FeaturedOpportunities = () => {
                           asChild
                         >
                           <Link
-                            href={opportunity.application_url || opportunity.source_url || "/opportunities"}
-                            target={opportunity.application_url || opportunity.source_url ? "_blank" : "_self"}
-                            rel={opportunity.application_url || opportunity.source_url ? "noopener noreferrer" : ""}
+                            href={
+                              opportunity.application_url ||
+                              opportunity.source_url ||
+                              "/opportunities"
+                            }
+                            target={
+                              opportunity.application_url ||
+                              opportunity.source_url
+                                ? "_blank"
+                                : "_self"
+                            }
+                            rel={
+                              opportunity.application_url ||
+                              opportunity.source_url
+                                ? "noopener noreferrer"
+                                : ""
+                            }
                           >
                             Learn More
                           </Link>

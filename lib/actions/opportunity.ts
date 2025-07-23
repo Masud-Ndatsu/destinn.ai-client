@@ -11,6 +11,14 @@ export interface CreateOpportunityPayload {
   application_link: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  thumbnail_url?: string | null;
+  created_at: string;
+}
+
 export interface Opportunity {
   id: string;
   title: string;
@@ -26,6 +34,7 @@ export interface Opportunity {
   is_approved?: boolean; // Added to match API response
   source_type?: string; // Added to match API response
   created_by_id?: string | null; // Added to match API response
+  category?: Category; // Added for featured opportunities with category relation
 }
 
 // Define pagination meta structure
@@ -120,6 +129,22 @@ export async function getOpportunities(
     // Only log on client side if console is available
     if (typeof window !== "undefined" && typeof console !== "undefined" && console.error) {
       console.error("Error fetching opportunities:", error);
+    }
+    throw error;
+  }
+}
+
+// Get featured opportunities
+export async function getFeaturedOpportunities(): Promise<ApiResponse<Opportunity[]>> {
+  try {
+    const response = await http.get<ApiResponse<Opportunity[]>>(
+      "/opportunities/featured"
+    );
+    return response.data;
+  } catch (error) {
+    // Only log on client side if console is available
+    if (typeof window !== "undefined" && typeof console !== "undefined" && console.error) {
+      console.error("Error fetching featured opportunities:", error);
     }
     throw error;
   }

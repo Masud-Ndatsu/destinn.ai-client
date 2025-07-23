@@ -8,13 +8,14 @@ import { Footer } from "@/components/Footer";
 import { useAuthStore } from "@/store/auth";
 import { useEffect } from "react";
 import { isTokenExpired } from "@/lib/utils";
-import { useOpportunities } from "@/lib/queries/useOpportunities";
-import { Loader2 } from "lucide-react";
+import { useFeaturedOpportunities } from "@/lib/queries/useOpportunities";
+import { Loader2, Sparkles, Target, TrendingUp } from "lucide-react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 export default function Home() {
   const token = useAuthStore((s) => s.user?.accessToken);
   const logout = useAuthStore((s) => s.logout);
-  const { isLoading: isLoadingOpportunities } = useOpportunities();
+  const { isLoading: isLoadingOpportunities } = useFeaturedOpportunities();
 
   useEffect(() => {
     if (token && isTokenExpired(token)) {
@@ -24,17 +25,11 @@ export default function Home() {
 
   console.log("🏠 Home page loading state:", { isLoadingOpportunities });
 
-  // Show full page loading state
+  // Show responsive loading state
   if (isLoadingOpportunities) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto" />
-          <div className="space-y-2">
-            <h2 className="text-2xl font-semibold text-foreground">Loading AmbitfulAI</h2>
-            <p className="text-muted-foreground">Please wait while we prepare your experience...</p>
-          </div>
-        </div>
+        <AiOutlineLoading3Quarters className="h-8 w-8 sm:h-10 sm:w-10 md:h-28 md:w-28 animate-spin text-blue-600" />
       </div>
     );
   }

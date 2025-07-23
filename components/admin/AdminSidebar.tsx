@@ -12,6 +12,7 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
+  Globe,
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,6 +36,7 @@ const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
   { id: "opportunities", label: "Opportunities", icon: Briefcase, href: "/admin/opportunities" },
   { id: "ai-drafts", label: "AI Drafts", icon: Bot, href: "/admin/ai-drafts" },
+  { id: "crawling", label: "AI Crawling", icon: Globe, href: "/admin/crawling" },
   { id: "users", label: "Users", icon: Users, href: "/admin/users" },
   { id: "analytics", label: "Analytics", icon: BarChart3, href: "/admin/analytics" },
   { id: "settings", label: "Settings", icon: Settings, href: "/admin/settings" },
